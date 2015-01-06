@@ -27,12 +27,12 @@
     (apply combine (combine m1 m2) more)))
 
 (defn config []
-  (let [f (io/file (System/getProperty "user.home") ".ckan.edn")]
+  (let [f (io/file (System/getProperty "user.home") ".nhs.edn")]
     (when (.exists f)
       (combine
        (clojure.tools.reader/read
         (indexing-push-back-reader
-         (java.io.PushbackReader. (io/reader "resources/default.ckan.edn"))))
+         (java.io.PushbackReader. (io/reader "resources/default.nhs.edn"))))
        (clojure.tools.reader/read
         (indexing-push-back-reader
          (java.io.PushbackReader. (io/reader f))))))))
