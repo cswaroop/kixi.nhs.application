@@ -20,5 +20,8 @@
                  ;; logging
                  [org.clojure/tools.logging  "0.3.0"]]
 
-  :uberjar-name "kixi.nhs.application.jar"
-  :profiles {:dev {:source-paths ["dev"]}})
+  :min-lein-version "2.5.0"
+  :uberjar-name "kixi-nhs-application-%s.jar"
+  :profiles {:dev {:source-paths ["dev"]}
+             :uberjar {:main kixi.nhs.application.main
+                       :aot [kixi.nhs.application.main]}})

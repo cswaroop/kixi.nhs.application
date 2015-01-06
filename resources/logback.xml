@@ -40,7 +40,6 @@
 
   <logger name="com.amazonaws" level="INFO" />
   <logger name="org.apache" level="INFO" />
-  <logger name="com.datastax.driver.core" level="INFO" />
   <logger name="org.eclipse.jetty" level="INFO" />
   <logger name="org.quartz.core.QuartzSchedulerThread" level="INFO" />
 
