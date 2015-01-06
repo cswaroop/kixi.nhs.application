@@ -1,0 +1,24 @@
+(defproject kixi.nhs.application "0.1.0-SNAPSHOT"
+  :description "NHS dashbaord data transformation and storage."
+  :url "http://example.com/FIXME"
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
+
+  :source-paths ["src"]
+
+  :dependencies [[org.clojure/clojure        "1.6.0"]
+
+                 ;; component
+                 [juxt/modular "0.2.0"]
+
+                 [kixi/pipe                  "0.17.12"]
+                 [kixi/ckan                  "0.1.0-SNAPSHOT"]
+
+                 ;; data
+                 [cheshire                   "5.4.0"]
+
+                 ;; logging
+                 [org.clojure/tools.logging  "0.3.0"]]
+
+  :uberjar-name "kixi.nhs.application.jar"
+  :profiles {:dev {:source-paths ["dev"]}})
