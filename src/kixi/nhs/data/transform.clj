@@ -32,19 +32,32 @@
        resource_ids))
 
 (defn outer-join
-  "Combines data for each CCG. Returns a sequence of maps, where each map respresents unique CCG
+  "Combines data using specified field. Returns a sequence of maps, where each map respresents unique field
   and contains data combined from multiple datasets."
-  [field colls]
-  (let [lookup #(get % field)
-        indexed (for [coll colls]
-                  (into {} (map (juxt lookup identity) coll)))]
-    (for [key (distinct (mapcat keys indexed))]
-      (into {} (map #(let [data (get % key)]
-                       (when (seq data)
-                         (hash-map (:resource_id data) (:observed_percentage data)
-                                   :ccg (:ccg data)))) indexed)))))
+  ([field colls]
+   (let [lookup #(get % field)
+         indexed (for [coll colls]
+                   (into {} (map (juxt lookup identity) coll)))]
+     (for [key (distinct (mapcat keys indexed))]
+       (into {} (keep #(let [data (get % key)] (when (seq data) data)) indexed)))))
+  ([field data-fn colls]
+   (let [lookup #(get % field)
+         indexed (for [coll colls]
+                   (into {} (map (juxt lookup identity) coll)))]
+     (for [key (distinct (mapcat keys indexed))]
+       (into {} (map data-fn indexed))))))
+
+(defn resource_id->field-name [ckan-client resource_id]
+  (let [metadata (storage/get-resource-metadata ckan-client resource_id)]
+    ))
 
 (defn combine-multiple-datasets [ckan-client & ids]
   (->> (get-and-transform-multiple-datasets ckan-client ids)
-       (outer-join :ccg)
+       (outer-join :ccg (fn [data] (let [d (get data key)]
+                                     (when (seq d)
+                                       (hash-map (:resource_id d) (:observed_percentage d)
+                                                 :ccg (:ccg d))))))
        (into [])))
+
+(defn output-multiple-datasets [ckan-client]
+  )
