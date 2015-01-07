@@ -1,9 +1,6 @@
 (ns user
   (:require [com.stuartsierra.component :as component]
             [clojure.tools.namespace.repl :refer [refresh refresh-all]]
-            [clojure.pprint :refer (pprint)]
-            [clojure.reflect :refer (reflect)]
-            [clojure.repl :refer (apropos dir doc find-doc pst source)]
             [modular :refer (system)]))
 
 

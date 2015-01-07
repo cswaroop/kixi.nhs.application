@@ -22,6 +22,7 @@
 
   :min-lein-version "2.5.0"
   :uberjar-name "kixi-nhs-application-%s.jar"
-  :profiles {:dev {:source-paths ["dev"]}
+  :profiles {:dev {:source-paths ["dev"]
+                   :dependencies [[org.clojure/tools.namespace "0.2.8"]]}
              :uberjar {:main kixi.nhs.application.main
                        :aot [kixi.nhs.application.main]}})

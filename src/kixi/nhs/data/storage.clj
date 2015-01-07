@@ -28,13 +28,8 @@
 
 (defn create-new-dataset
   "Create a new dataset (package). Returns id of the newly created dataset."
-  [ckan-client]
-  (let [dataset (json/encode {:owner_org "kixi"
-                              :title "testing_transformation_kixi"
-                              :name "transformation_test_kixi_5"
-                              :author "Kixi"
-                              :notes "Testing Clojure CKAN client: transformation of existing data and creation of new datasets."})]
-    (:id (ckan/package-create ckan-client dataset))))
+  [ckan-client dataset]
+  (:id (ckan/package-create ckan-client dataset)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Resources                                                   ;;
@@ -49,11 +44,8 @@
 (defn create-new-resource
   "Appends a new resource to a datasets list of resources.
   Returns id of the newly created resource."
-  [ckan-client package_id]
-  (let [resource (json/encode {:package_id package_id
-                               :url "foo"
-                               :description "Transformed copy of a resource."})]
-    (ckan/resource-create ckan-client package_id resource)))
+  [ckan-client package_id resource]
+  (:id (ckan/resource-create ckan-client package_id resource)))
 
 (defn delete-resource
   "Delete a resource from a dataset. Returns true if deleted successfully."
