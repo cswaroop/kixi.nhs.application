@@ -65,7 +65,8 @@
   "Stores new dataset in DataStore. Returns true if stored
   successfully."
   [ckan-client package_id resource]
-  (ckan/datastore-insert ckan-client package_id resource))
+  (let [response (ckan/datastore-insert ckan-client package_id resource)]
+    (-> response :success)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Organization                                                ;;

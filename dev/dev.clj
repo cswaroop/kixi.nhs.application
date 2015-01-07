@@ -5,6 +5,32 @@
             [cheshire.core           :as json]
             [kixi.ckan.data          :as data]))
 
+(defn get-and-transform-multiple-datasets
+  "Filters data for CCGs from 2013."
+  [ckan-client resource_ids]
+  (map (fn [id]
+         (->> (storage/get-resource-data ckan-client id)
+              (keep #(when (and (= "CCG" (get % "Breakdown"))
+                                (= "2013" (get % "Year")))
+                       (let [total-patients (transform/get-value "Registered patients" %)
+                             observed       (transform/get-value "Observed" %)]
+                         (hash-map :ccg (get % "Level")
+                                   :resource_id id
+                                   :observed_percentage (if (and total-patients observed)
+                                                          (str (float (* (/ observed total-patients) 100)))
+                                                          "N/A")))))))
+       resource_ids))
+
+(defn combine-and-transform [ckan-client & ids]
+  (->> (get-and-transform-multiple-datasets ckan-client ids)
+       (transform/outer-join :ccg (fn [k data] (let [d (get data k)]
+                                                 (when (seq d)
+                                                   ;; could use transform/resource_id->description but description of the files
+                                                   ;; in this case is "Indicator data ()" - not unique. Using resource_id instead.
+                                                   (hash-map (:resource_id d) (:observed_percentage d)
+                                                             :ccg (:ccg d))))))
+       (into [])))
+
 (defn combine-and-store-multiple-datasets [system]
   (let [new-dataset        (json/encode {:owner_org "kixi"
                                          :title "testing_combining_multiple_datasets"
@@ -16,10 +42,9 @@
                                          :url "foo"
                                          :description "Combined datasets."})
         new-resource_id    (storage/create-new-resource (:ckan-client system) new-package_id new-resource)
-        resource-to-store  (transform/combine-multiple-datasets (:ckan-client system)
-                                                                "7a69bc84-fffd-4750-b22b-fc66a5ea0728"
-                                                                "0e73fe0d-0b16-4270-9026-f8fd8a75e684"
-                                                                "7381b851-7a50-4b8c-b64e-155eadbe5694")
+        resource-to-store  (combine-and-transform (:ckan-client system)
+                                                  "7a69bc84-fffd-4750-b22b-fc66a5ea0728"
+                                                  "7381b851-7a50-4b8c-b64e-155eadbe5694")
         data               (data/prepare-resource-for-insert new-package_id new-resource_id {"records" resource-to-store})]
 
     (storage/insert-new-resource (:ckan-client system) new-package_id data)))
@@ -32,9 +57,9 @@
   extracting data for 2013 for CCGs from specified datasets
   and grouping it by CCG."
   [system]
-  (count (transform/combine-multiple-datasets (:ckan-client system)
-                                              "7a69bc84-fffd-4750-b22b-fc66a5ea0728"
-                                              "0e73fe0d-0b16-4270-9026-f8fd8a75e684")))
+  (count (combine-multiple-datasets (:ckan-client system)
+                                    "7a69bc84-fffd-4750-b22b-fc66a5ea0728"
+                                    "7381b851-7a50-4b8c-b64e-155eadbe5694")))
 
 (defn output-multiple-datasets
   "Splits dataset by year and outputs data into separate resources."

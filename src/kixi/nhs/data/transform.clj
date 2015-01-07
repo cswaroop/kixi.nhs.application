@@ -15,22 +15,6 @@
   (-> (get m k)
       parse-number))
 
-(defn get-and-transform-multiple-datasets
-  "Filters data for CCGs from 2013."
-  [ckan-client resource_ids]
-  (map (fn [id]
-         (->> (storage/get-resource-data ckan-client id)
-              (keep #(when (and (= "CCG" (get % "Breakdown"))
-                                (= "2013" (get % "Year")))
-                       (let [total-patients (get-value "Registered patients" %)
-                             observed       (get-value "Observed" %)]
-                         (hash-map :ccg (get % "Level")
-                                   :resource_id id
-                                   :observed_percentage (if (and total-patients observed)
-                                                          (str (float (* (/ observed total-patients) 100)))
-                                                          "N/A")))))))
-       resource_ids))
-
 (defn outer-join
   "Combines data using specified field and function that acts on data with the same field value.
   Returns a sequence of maps, where each map respresents unique field
@@ -42,17 +26,10 @@
     (for [key (distinct (mapcat keys indexed))]
       (into {} (map #(data-fn key %) indexed)))))
 
-(defn resource_id->field-name [ckan-client resource_id]
-  (let [metadata (storage/get-resource-metadata ckan-client resource_id)]
-    ))
-
-(defn combine-multiple-datasets [ckan-client & ids]
-  (->> (get-and-transform-multiple-datasets ckan-client ids)
-       (outer-join :ccg (fn [k data] (let [d (get data k)]
-                                       (when (seq d)
-                                         (hash-map (:resource_id d) (:observed_percentage d)
-                                                   :ccg (:ccg d))))))
-       (into [])))
+(defn resource_id->description
+  "Returns description of a resource with a specified id."
+  [ckan-client resource_id]
+  (:description (storage/get-resource-metadata ckan-client resource_id)))
 
 (defn split-by-field-value
   "Creates a map of sequences, where key is a unique field, and value
