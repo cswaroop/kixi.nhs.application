@@ -9,7 +9,7 @@ Dev setup:
                   :api-key "<your_private_key>"}}
     ```
 
-2. Do `M-x cider-jack-in` in kixi.ckan project
+2. Do `M-x cider-jack-in` in kixi.nhs.application project
 3. Run `(go)`
 4. Open up `kixi.nhs.application.dev.clj` and try out some of the function there, e.g.
   - `(get-all-datasets-names system)` will print a list of *all* datasets in this client's CKAN
