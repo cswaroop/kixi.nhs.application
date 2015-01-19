@@ -2,7 +2,6 @@
   (:require [kixi.ckan                                 :refer (new-ckan-client-session)]
             [kixi.nhs.application.pipeline             :refer (new-pipeline)]
             [com.stuartsierra.component                :as component]
-            [modular.core                              :as mod]
             [clojure.tools.logging                     :as log]
             [clojure.pprint                            :refer (pprint)]
             [clojure.tools.reader.reader-types         :refer (indexing-push-back-reader
@@ -43,6 +42,6 @@
          :ckan-client (new-ckan-client-session (:ckan-client cfg))
          :pipeline    (new-pipeline)
          :scheduler   (kixipipe.scheduler/mk-session cfg))
-        (mod/system-using
-         {:pipeline  [:ckan-client]
-          :scheduler [:pipeline]}))))
+        (component/system-using
+         {:pipeline  {:ckan-client :ckan-client}
+          :scheduler {:pipeline :pipeline}}))))

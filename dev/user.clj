@@ -1,8 +1,8 @@
 (ns user
   (:require [com.stuartsierra.component :as component]
-            [clojure.tools.namespace.repl :refer [refresh refresh-all]]
-            [modular :refer (system)]))
+            [clojure.tools.namespace.repl :refer [refresh refresh-all]]))
 
+(def system)
 
 (defn init
   "Constructs the current development system."
