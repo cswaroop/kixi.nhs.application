@@ -11,7 +11,12 @@ Dev setup:
 
 2. Do `M-x cider-jack-in` in kixi.nhs.application project
 3. Run `(go)`
-4. Open up `kixi.nhs.application.dev.clj` and try out some of the function there, e.g.
-  - `(get-all-datasets-names system)` will print a list of *all* datasets in this client's CKAN
-  - `(get-package-contents system "hscic_dataset_1")` will get metadata of a package with a specified name.
-  - `(get-resource-data system "1aa05f43-4921-41c9-bd80-8bca465f1985")` will get first page of a resource with a given id.
+4. Open up `dev/dev.clj` and try out some of the function there, e.g.
+   `(dev/list-all-datasets system)` will print a list of *all*
+   datasets in this client's CKAN
+
+5. Try out some other functions:
+
+  - `(take 10 (kixi.nhs.data.storage/get-resource-data (:ckan-client
+    system) "0e73fe0d-0b16-4270-9026-f8fd8a75e684"))` to list 10
+    values from that resource.

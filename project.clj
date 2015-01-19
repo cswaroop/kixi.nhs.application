@@ -8,8 +8,7 @@
 
   :dependencies [[org.clojure/clojure        "1.6.0"]
 
-                 ;; component
-                 [juxt/modular "0.2.0"]
+                 [com.stuartsierra/component "0.2.2"]
 
                  [kixi/pipe                  "0.17.12"]
                  [kixi/ckan                  "0.1.0-SNAPSHOT"]
