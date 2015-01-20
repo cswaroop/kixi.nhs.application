@@ -12,3 +12,4 @@ pom.xml.asc
 /logs/
 .nrepl-port
 .DS_Store
+*.*~
