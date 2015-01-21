@@ -1,14 +1,33 @@
 (ns kixi.nhs.board-report
   (:require [kixi.nhs.data.storage :as storage]
-            [clojure.tools.logging :as log]))
+            [clojure.tools.logging :as log]
+            [clojure.edn :as edn]))
 
-(defn read-dataset [ckan-client recipe-map resource_id]
-  (let [{:keys [indicator-field conditions]} recipe-map
+(defn read-dataset
+ "Reads data from CKAN for a given resource-id,
+  filters on conditions and outputs a sequence
+  of maps where each map is enriched with indicator-id"
+ [ckan-client recipe-map resource_id]
+ ;; Gets the data check if the condition correspond to the one specified
+ ;; in the config. Builds a map with filtered data and indicator-id
+  (let [{:keys [indicator-field conditions indicator-id]} recipe-map
         data (storage/get-resource-data ckan-client resource_id)]
-    (filter (fn [d] (every? (fn [condition] (let [{:keys [field value]} condition]
-                                              (= (get d field) value)))
-                            conditions))
+    (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
+                                                  (= (get d field) value)))
+                                conditions)
+                    (-> d
+                        (select-keys [indicator-field "Year"])
+                        (assoc "Indicator id" indicator-id))))
             data)))
+
+(defn read-config [url]
+  (-> (slurp url) (edn/read-string)))
+
+(defn create-boardreport-dataset [ckan-client config-url]
+  (let [config (read-config config-url)]
+    (mapcat (fn [dataset-config]
+              (read-dataset ckan-client dataset-config (:resource-id dataset-config)))
+            (:datasets config))))
 
 (comment
   ;; 23
@@ -50,6 +69,61 @@
   (kixi.nhs.board-report/read-dataset (:ckan-client system)
                                       {:indicator-field "Indicator value"
                                        :conditions [{:field "Level" :value "England"}]}
-                                      "2102f836-072a-42a6-b4ca-ac6aa2f96562"))
+                                      "2102f836-072a-42a6-b4ca-ac6aa2f96562")
+  ;; 22
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "2b10e7b4-c799-44f9-81d6-3a42f4260893")
+  ;; 24
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "8b2dbabb-9b0a-4ea6-b357-74200ae4f311")
+  ;; 27
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "e2386960-b9e1-4d9f-ba8b-6d79c5c62d94")
+  ;; 28
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "bf9fff22-599e-4d58-8b78-961bc6773d62")
+  ;; 43
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "e1ec7ee1-d387-45e3-a0dd-3c8e3162e0e0")
+  ;; 65
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "e39649c2-e4dd-49b3-bb9d-ae7d7b69bd2d")
+  ;; 66
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "5c932116-a89c-4efc-9db9-f4b36e812ef7")
+  ;; 44
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "f581825b-cf3e-4f5d-a358-190dcc3f8a0e")
+  ;; 61
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "f581825b-cf3e-4f5d-a358-190dcc3f8a0e")
+  ;; 62
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value (rate)"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "aaa57c54-c747-4eb8-aa9e-f3da798372f3")
+  ;; 54
+  (kixi.nhs.board-report/read-dataset (:ckan-client system)
+                                      {:indicator-field "Indicator value"
+                                       :conditions [{:field "Level" :value "England"}]}
+                                      "3cb3fc90-3944-455a-97f0-50c9680184c7"))
 
 
