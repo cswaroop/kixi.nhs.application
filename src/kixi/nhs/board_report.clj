@@ -21,14 +21,14 @@
   [recipe-map data]
   (let [{:keys [indicator-field conditions indicator-id]} recipe-map]
     (if (contains? (first data) indicator-field)
-      (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
-                                                    (= (get d field) value)))
-                                  conditions)
-                      (-> d
-                          (select-keys ["Year"])
-                          (assoc "Indicator id" indicator-id "Value" (get d indicator-field)))))
-            data)
-      '())))
+      (into [] (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
+                                                             (= (get d field) value)))
+                                           conditions)
+                               (-> d
+                                   (select-keys ["Year"])
+                                   (assoc "Indicator id" indicator-id "Value" (get d indicator-field)))))
+                     data))
+      [])))
 
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
@@ -40,7 +40,7 @@
 (defn read-config
   "Reads the config file and returns it a a string."
   [url]
-  (-> (slurp url) (edn/read-string)))
+  (-> (slurp url) edn/read-string))
 
 (defn create-boardreport-dataset
   "Creates a sequence of maps containing the info
@@ -55,7 +55,7 @@
   "Calls create-boardreport-dataset and insert new
   dataset into ckan."
   [ckan-client config-url]
-  (let [now (now->str)
+  (let [now             (now->str)
         new-dataset     (json/encode {:owner_org "kixi"
                                       :title (str "Board report data" " - " now)
                                       :name (str "board_report_data" "_" now)
@@ -66,9 +66,9 @@
                                       :description "Board report resource"})
         new-resource-id (storage/create-new-resource ckan-client new-dataset-id new-resource)
         records         (create-boardreport-dataset ckan-client config-url)
-        fields         [{"id" "Indicator id" "type" "text"}
-                        {"id" "Value" "type" "text"}
-                        {"id" "Year" "type" "text"}]
+        fields          [{"id" "Indicator id" "type" "text"}
+                         {"id" "Value" "type" "text"}
+                         {"id" "Year" "type" "text"}]
         data            (data/prepare-resource-for-insert new-dataset-id new-resource-id {"records" records
                                                                                           "fields"  fields})]
     (storage/insert-new-resource ckan-client new-dataset-id data)))
