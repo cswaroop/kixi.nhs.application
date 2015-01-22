@@ -34,7 +34,7 @@
              :indicator-field "Indicator value"
              :conditions [{:field "Level" :value "England"}]
              :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
-            {:indcator-id "24"
+            {:indicator-id "24"
              :indicator-field "Indicator value"
              :conditions [{:field "Level" :value "England"}]
              :resource-id "8b2dbabb-9b0a-4ea6-b357-74200ae4f311"}

@@ -1,33 +1,77 @@
 (ns kixi.nhs.board-report
   (:require [kixi.nhs.data.storage :as storage]
             [clojure.tools.logging :as log]
-            [clojure.edn :as edn]))
+            [clojure.edn           :as edn]
+            [clj-time.core         :as t]
+            [clj-time.format       :as tf]
+            [cheshire.core         :as json]
+            [kixi.ckan.data        :as data]))
+
+(def custom-formatter (tf/formatter "yyyyMMddHHmmss"))
+
+(defn now->str
+  "Formats the current timestamp into a string
+  with date and time."
+  []
+  (let [now (t/now)]
+    (tf/unparse custom-formatter now)))
+
+(defn filter-and-enrich-dataset
+  "Filters and enriches dataset according to given recipe."
+  [recipe-map data]
+  (let [{:keys [indicator-field conditions indicator-id]} recipe-map]
+    (if (contains? (first data) indicator-field)
+      (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
+                                                    (= (get d field) value)))
+                                  conditions)
+                      (-> d
+                          (select-keys ["Year"])
+                          (assoc "Indicator id" indicator-id "Value" (get d indicator-field)))))
+            data)
+      '())))
 
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
   filters on conditions and outputs a sequence
-  of maps where each map is enriched with indicator-id"
+  of maps where each map is enriched with indicator-id."
  [ckan-client recipe-map resource_id]
- ;; Gets the data check if the condition correspond to the one specified
- ;; in the config. Builds a map with filtered data and indicator-id
-  (let [{:keys [indicator-field conditions indicator-id]} recipe-map
-        data (storage/get-resource-data ckan-client resource_id)]
-    (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
-                                                  (= (get d field) value)))
-                                conditions)
-                    (-> d
-                        (select-keys [indicator-field "Year"])
-                        (assoc "Indicator id" indicator-id))))
-            data)))
+ (filter-and-enrich-dataset recipe-map (storage/get-resource-data ckan-client resource_id)))
 
-(defn read-config [url]
+(defn read-config
+  "Reads the config file and returns it a a string."
+  [url]
   (-> (slurp url) (edn/read-string)))
 
-(defn create-boardreport-dataset [ckan-client config-url]
+(defn create-boardreport-dataset
+  "Creates a sequence of maps containing the info
+  needed for the board report."
+  [ckan-client config-url]
   (let [config (read-config config-url)]
     (mapcat (fn [dataset-config]
               (read-dataset ckan-client dataset-config (:resource-id dataset-config)))
             (:datasets config))))
+
+(defn insert-boardreport-dataset
+  "Calls create-boardreport-dataset and insert new
+  dataset into ckan."
+  [ckan-client config-url]
+  (let [now (now->str)
+        new-dataset     (json/encode {:owner_org "kixi"
+                                      :title (str "Board report data" " - " now)
+                                      :name (str "board_report_data" "_" now)
+                                      :author "Kixi"})
+        new-dataset-id  (storage/create-new-dataset ckan-client new-dataset)
+        new-resource    (json/encode {:package_id new-dataset-id
+                                      :url "http://fix-me" ;; url is mandatory
+                                      :description "Board report resource"})
+        new-resource-id (storage/create-new-resource ckan-client new-dataset-id new-resource)
+        records         (create-boardreport-dataset ckan-client config-url)
+        fields         [{"id" "Indicator id" "type" "text"}
+                        {"id" "Value" "type" "text"}
+                        {"id" "Year" "type" "text"}]
+        data            (data/prepare-resource-for-insert new-dataset-id new-resource-id {"records" records
+                                                                                          "fields"  fields})]
+    (storage/insert-new-resource ckan-client new-dataset-id data)))
 
 (comment
   ;; 23

@@ -17,7 +17,8 @@
                  [cheshire                   "5.4.0"]
 
                  ;; logging
-                 [org.clojure/tools.logging  "0.3.0"]]
+                 [org.clojure/tools.logging  "0.3.0"]
+                 [clj-time       "0.9.0"]]
 
   :min-lein-version "2.5.0"
   :uberjar-name "kixi-nhs-application-%s.jar"
