@@ -16,26 +16,37 @@
   (let [now (t/now)]
     (tf/unparse custom-formatter now)))
 
-(defn filter-and-enrich-dataset
-  "Filters and enriches dataset according to given recipe."
+(defn filter-dataset
+  "Filters dataset according to the given recipe."
   [recipe-map data]
   (let [{:keys [indicator-field conditions indicator-id]} recipe-map]
-    (if (contains? (first data) indicator-field)
-      (into [] (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
-                                                             (= (get d field) value)))
-                                           conditions)
-                               (-> d
-                                   (select-keys ["Year"])
-                                   (assoc "Indicator id" indicator-id "Value" (get d indicator-field)))))
-                     data))
-      [])))
+    ;; Go through the data sequence and 1.Check indicator field, 
+    ;; 2.Check the conditions, 3.Keep "Year" and "Value".
+    (->> (if (contains? (first data) indicator-field)
+                (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
+                                                              (= (get d field) value)))
+                                            conditions)
+                                (select-keys d ["Year" indicator-field])))
+                      data)))))
+
+(defn enrich-dataset
+  "Enrichs dataset with indicator-id."
+  [recipe-map data]
+  (let [{:keys [indicator-field conditions indicator-id]} recipe-map]
+    ;; Go through the data sequence and 1.Change the key map indicator-field
+    ;; for value, 2.Add the indicator-id.
+    (into [] (keep (fn [d]
+                     (-> d
+                         (clojure.set/rename-keys {indicator-field "Value"})
+                         (assoc "Indicator id" indicator-id))) data))))
 
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
   filters on conditions and outputs a sequence
   of maps where each map is enriched with indicator-id."
  [ckan-client recipe-map resource_id]
- (filter-and-enrich-dataset recipe-map (storage/get-resource-data ckan-client resource_id)))
+ (enrich-dataset recipe-map
+                 (filter-dataset recipe-map (storage/get-resource-data ckan-client resource_id))))
 
 (defn read-config
   "Reads the config file and returns it a a string."
