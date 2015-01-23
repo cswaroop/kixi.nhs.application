@@ -21,7 +21,7 @@
   [recipe-map data]
   (let [{:keys [indicator-field conditions indicator-id]} recipe-map]
     ;; Go through the data sequence and 1.Check indicator field, 
-    ;; 2.Check the conditions, 3.Keep "Year" and "Value".
+    ;; 2.Check the conditions, 3.Keep "Year" and "Indicator value".
     (->> (if (contains? (first data) indicator-field)
                 (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
                                                               (= (get d field) value)))
@@ -44,7 +44,7 @@
  "Reads data from CKAN for a given resource-id,
   filters on conditions and outputs a sequence
   of maps where each map is enriched with indicator-id."
- [ckan-client recipe-map resource_id]
+ [ckan-client recipe-map resource_id] 
  (enrich-dataset recipe-map
                  (filter-dataset recipe-map (storage/get-resource-data ckan-client resource_id))))
 
