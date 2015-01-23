@@ -22,12 +22,12 @@
   (let [{:keys [indicator-field conditions indicator-id]} recipe-map]
     ;; Go through the data sequence and 1.Check indicator field, 
     ;; 2.Check the conditions, 3.Keep "Year" and "Indicator value".
-    (->> (if (contains? (first data) indicator-field)
-                (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
-                                                              (= (get d field) value)))
-                                            conditions)
-                                (select-keys d ["Year" indicator-field])))
-                      data)))))
+    (when (contains? (first data) indicator-field)
+      (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
+                                                    (= (get d field) value)))
+                                  conditions)
+                      (select-keys d ["Year" indicator-field])))
+            data))))
 
 (defn enrich-dataset
   "Enrichs dataset with indicator-id."
@@ -35,10 +35,10 @@
   (let [{:keys [indicator-field conditions indicator-id]} recipe-map]
     ;; Go through the data sequence and 1.Change the key map indicator-field
     ;; for value, 2.Add the indicator-id.
-    (into [] (keep (fn [d]
-                     (-> d
-                         (clojure.set/rename-keys {indicator-field "Value"})
-                         (assoc "Indicator id" indicator-id))) data))))
+    (mapv (fn [d]
+            (-> d
+                (clojure.set/rename-keys {indicator-field "Value"})
+                (assoc "Indicator id" indicator-id))) data)))
 
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
