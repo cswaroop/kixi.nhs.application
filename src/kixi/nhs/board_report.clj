@@ -41,10 +41,20 @@
                 (assoc "Indicator id" indicator-id))) data)))
 
 ;; (defn str->keyword
-;;   "Changes the string keywords to actual keywords"
+;;   "Changes the string map keys to keywords."
 ;;   [data]
 ;;   (for [d data
-;;         (clojure.set/rename-keys d {})]))
+;;         :let [old-keys (keys d)
+;;               new-keys (map
+;;                         (fn [k]
+;;                           (-> k
+;;                               (clojure.string/lower-case)
+;;                               (clojure.string/replace #" " "_")
+;;                               (keyword)))
+                        
+;;                         (keys d))]
+;;         ]
+;;     data))
 
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
