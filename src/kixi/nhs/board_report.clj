@@ -40,13 +40,20 @@
                 (clojure.set/rename-keys {indicator-field "Value"})
                 (assoc "Indicator id" indicator-id))) data)))
 
+;; (defn str->keyword
+;;   "Changes the string keywords to actual keywords"
+;;   [data]
+;;   (for [d data
+;;         (clojure.set/rename-keys d {})]))
+
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
   filters on conditions and outputs a sequence
   of maps where each map is enriched with indicator-id."
- [ckan-client recipe-map resource_id] 
- (enrich-dataset recipe-map
-                 (filter-dataset recipe-map (storage/get-resource-data ckan-client resource_id))))
+ [ckan-client recipe-map resource_id]
+ (->> (storage/get-resource-data ckan-client resource_id)
+      (filter-dataset recipe-map )
+      (enrich-dataset recipe-map)))
 
 (defn read-config
   "Reads the config file and returns it a a string."
