@@ -57,6 +57,25 @@
     (mapv (fn [d] (clojure.set/rename-keys d map-keys))
           data)))
 
+(defn keyword->str
+  "Changes keywords back to str before inserting
+  into ckan."
+  [data]
+  (let ;; Create the new keys and a map with the
+      ;; old keys as keys and new keys as values:
+      [old-keys (keys (first data))
+       new-keys (map (fn [k]
+                       (-> k
+                           (str)
+                           (clojure.string/replace #":" "")
+                           (clojure.string/capitalize)
+                           (clojure.string/replace #"_" " ")))
+                     old-keys)
+       map-keys (zipmap old-keys new-keys)]
+    ;; Rename keys in each element of 'data'
+    (mapv (fn [d] (clojure.set/rename-keys d map-keys))
+          data)))
+
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
   filters on conditions and outputs a sequence
@@ -64,7 +83,8 @@
  [ckan-client recipe-map resource_id]
  (->> (storage/get-resource-data ckan-client resource_id)
       (filter-dataset recipe-map )
-      (enrich-dataset recipe-map)))
+      (enrich-dataset recipe-map)
+      (str->keyword)))
 
 (defn read-config
   "Reads the config file and returns it a a string."
@@ -77,7 +97,9 @@
   [ckan-client config-url]
   (let [config (read-config config-url)]
     (mapcat (fn [dataset-config]
-              (read-dataset ckan-client dataset-config (:resource-id dataset-config)))
+              (keyword->str
+               (read-dataset ckan-client dataset-config
+                             (:resource-id dataset-config))))
             (:datasets config))))
 
 (defn insert-boardreport-dataset
@@ -98,8 +120,9 @@
         fields          [{"id" "Indicator id" "type" "text"}
                          {"id" "Value" "type" "text"}
                          {"id" "Year" "type" "text"}]
-        data            (data/prepare-resource-for-insert new-dataset-id new-resource-id {"records" records
-                                                                                          "fields"  fields})]
+        data            (data/prepare-resource-for-insert new-dataset-id new-resource-id
+                                                          {"records" records
+                                                           "fields"  fields})]
     (storage/insert-new-resource ckan-client new-dataset-id data)))
 
 (comment

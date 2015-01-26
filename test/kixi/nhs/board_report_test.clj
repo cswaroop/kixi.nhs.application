@@ -135,3 +135,12 @@
        (board-report/str->keyword [{"Indicator id" "22", "Value" "0.743", "Year" "2013/14"}
                                    {"Indicator id" "22", "Value" "0.744", "Year" "2012/13"}
                                    {"Indicator id" "22", "Value" "0.743", "Year" "2011/12"}]))))
+
+(deftest keyword->str-test
+  (testing "Map keys keywords are turned into strings.")
+  (is (= [{"Indicator id" "22", "Value" "0.743", "Year" "2013/14"}
+          {"Indicator id" "22", "Value" "0.744", "Year" "2012/13"}
+          {"Indicator id" "22", "Value" "0.743", "Year" "2011/12"}] 
+         (board-report/keyword->str [{:indicator_id "22", :value "0.743", :year "2013/14"}
+                                     {:indicator_id "22", :value "0.744", :year "2012/13"}
+                                     {:indicator_id "22", :value "0.743", :year "2011/12"}]))))
