@@ -40,21 +40,22 @@
                 (clojure.set/rename-keys {indicator-field "Value"})
                 (assoc "Indicator id" indicator-id))) data)))
 
-;; (defn str->keyword
-;;   "Changes the string map keys to keywords."
-;;   [data]
-;;   (for [d data
-;;         :let [old-keys (keys d)
-;;               new-keys (map
-;;                         (fn [k]
-;;                           (-> k
-;;                               (clojure.string/lower-case)
-;;                               (clojure.string/replace #" " "_")
-;;                               (keyword)))
-                        
-;;                         (keys d))]
-;;         ]
-;;     data))
+(defn str->keyword
+  "Changes the string map keys to keywords."
+  [data]
+  (let ;; Create the new keys and a map with the
+      ;; old keys as keys and new keys as values:
+      [old-keys (keys (first data))
+       new-keys (map (fn [k]
+                       (-> k
+                           (clojure.string/lower-case)
+                           (clojure.string/replace #" " "_")
+                           (keyword)))
+                     old-keys)
+       map-keys (zipmap old-keys new-keys)]
+    ;; Rename keys in each element of 'data'
+    (mapv (fn [d] (clojure.set/rename-keys d map-keys))
+          data)))
 
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
