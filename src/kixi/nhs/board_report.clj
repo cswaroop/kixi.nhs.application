@@ -79,9 +79,9 @@
                                       :description "Board report resource"})
         new-resource-id (storage/create-new-resource ckan-client new-dataset-id new-resource)
         records         (create-boardreport-dataset ckan-client config-url)
-        fields          [{"id" "Indicator id" "type" "text"}
-                         {"id" "Value" "type" "text"}
-                         {"id" "Year" "type" "text"}]
+        fields          [{"id" "indicator_id" "type" "text"}
+                         {"id" "value" "type" "text"}
+                         {"id" "year" "type" "text"}]
         data            (data/prepare-resource-for-insert new-dataset-id new-resource-id
                                                           {"records" records
                                                            "fields"  fields})]
