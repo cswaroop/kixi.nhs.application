@@ -26,7 +26,7 @@
       (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field value]} condition]
                                                     (= (get d field) value)))
                                   conditions)
-                      (select-keys d ["Year" indicator-field])))
+                      (select-keys d [:year indicator-field])))
             data))))
 
 (defn enrich-dataset
@@ -37,57 +37,20 @@
     ;; for value, 2.Add the indicator-id.
     (mapv (fn [d]
             (-> d
-                (clojure.set/rename-keys {indicator-field "Value"})
-                (assoc "Indicator id" indicator-id))) data)))
-
-(defn str->keyword
-  "Changes the string map keys to keywords."
-  [data]
-  (let ;; Create the new keys and a map with the
-      ;; old keys as keys and new keys as values:
-      [old-keys (keys (first data))
-       new-keys (map (fn [k]
-                       (-> k
-                           (clojure.string/lower-case)
-                           (clojure.string/replace #" " "_")
-                           (keyword)))
-                     old-keys)
-       map-keys (zipmap old-keys new-keys)]
-    ;; Rename keys in each element of 'data'
-    (mapv (fn [d] (clojure.set/rename-keys d map-keys))
-          data)))
-
-(defn keyword->str
-  "Changes keywords back to str before inserting
-  into ckan."
-  [data]
-  (let ;; Create the new keys and a map with the
-      ;; old keys as keys and new keys as values:
-      [old-keys (keys (first data))
-       new-keys (map (fn [k]
-                       (-> k
-                           (str)
-                           (clojure.string/replace #":" "")
-                           (clojure.string/capitalize)
-                           (clojure.string/replace #"_" " ")))
-                     old-keys)
-       map-keys (zipmap old-keys new-keys)]
-    ;; Rename keys in each element of 'data'
-    (mapv (fn [d] (clojure.set/rename-keys d map-keys))
-          data)))
+                (clojure.set/rename-keys {indicator-field :value})
+                (assoc :indicator_id indicator-id))) data)))
 
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
-  filters on conditions and outputs a sequence
-  of maps where each map is enriched with indicator-id."
+  filters on conditions and outputs a vector of
+  maps where each map is enriched with indicator-id."
  [ckan-client recipe-map resource_id]
  (->> (storage/get-resource-data ckan-client resource_id)
       (filter-dataset recipe-map )
-      (enrich-dataset recipe-map)
-      (str->keyword)))
+      (enrich-dataset recipe-map)))
 
 (defn read-config
-  "Reads the config file and returns it a a string."
+  "Reads the config file and returns it as a string."
   [url]
   (-> (slurp url) edn/read-string))
 
@@ -97,9 +60,8 @@
   [ckan-client config-url]
   (let [config (read-config config-url)]
     (mapcat (fn [dataset-config]
-              (keyword->str
-               (read-dataset ckan-client dataset-config
-                             (:resource-id dataset-config))))
+              (read-dataset ckan-client dataset-config
+                            (:resource-id dataset-config)))
             (:datasets config))))
 
 (defn insert-boardreport-dataset
