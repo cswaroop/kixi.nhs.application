@@ -96,3 +96,8 @@
 
 ;; (output-multiple-datasets system "Gender" "0e73fe0d-0b16-4270-9026-f8fd8a75e684" "testing_outputting_multiple_datasets (per gender)")
 ;; (output-multiple-datasets system "Breakdown" "0e73fe0d-0b16-4270-9026-f8fd8a75e684" "testing_outputting_multiple_datasets (per area)")
+
+
+;;(output-multiple-datasets system :year "3cb3fc90-3944-455a-97f0-50c9680184c7" "testing_outputting_multiple_datasets (per year)")
+
+;;(output-multiple-datasets system :level "8bf9dfdf-8ca5-44eb-b5e7-4268bfcd7d36" "testing_outputting_multiple_datasets (per location)")
