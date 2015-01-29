@@ -11,13 +11,15 @@
                  [com.stuartsierra/component "0.2.2"]
 
                  [kixi/pipe                  "0.17.12"]
-                 [kixi/ckan                  "0.1.0-SNAPSHOT"]
+                 [kixi/ckan                  "0.1.1-SNAPSHOT"]
 
                  ;; data
                  [cheshire                   "5.4.0"]
 
                  ;; logging
-                 [org.clojure/tools.logging  "0.3.0"]]
+                 [org.clojure/tools.logging  "0.3.0"]
+
+                 [clj-time                   "0.9.0"]]
 
   :min-lein-version "2.5.0"
   :uberjar-name "kixi-nhs-application-%s.jar"

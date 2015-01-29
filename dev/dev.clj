@@ -88,7 +88,11 @@
 ;; Examples
 
 ;; (combine-multiple-datasets system)
-;; (list-all-datasets system)
-;; (output-multiple-datasets system "Year" "0e73fe0d-0b16-4270-9026-f8fd8a75e684" "testing_outputting_multiple_datasets (per year)")
+
+;;(list-all-datasets system)
+
+
+;;(output-multiple-datasets system "Year" "0e73fe0d-0b16-4270-9026-f8fd8a75e684" "testing_outputting_multiple_datasets (per year)")
+
 ;; (output-multiple-datasets system "Gender" "0e73fe0d-0b16-4270-9026-f8fd8a75e684" "testing_outputting_multiple_datasets (per gender)")
 ;; (output-multiple-datasets system "Breakdown" "0e73fe0d-0b16-4270-9026-f8fd8a75e684" "testing_outputting_multiple_datasets (per area)")
