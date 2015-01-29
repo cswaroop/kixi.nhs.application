@@ -1,4 +1,4 @@
-(ns kixi.nhs.dashboard
+(ns kixi.nhs.exploration-split
   (:require
    [cheshire.core           :as json]
    [kixi.nhs.data.storage   :as storage]
