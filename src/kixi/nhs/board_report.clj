@@ -8,6 +8,10 @@
             [kixi.ckan.data        :as data]
             [kixi.nhs.data.transform :as transform]))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Helpers                                                                              ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def custom-formatter (tf/formatter "yyyyMMddHHmmss"))
 
 (defn now->str
@@ -43,7 +47,8 @@
                 (assoc :indicator_id indicator-id))) data)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; indicator 213
+;; Internal calculations                                                                ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn sum-sequence [data k]
   (let [timestamp    (-> data first :year)]
@@ -64,8 +69,7 @@
 
 (defn split-by-key [k data]
   (->> (group-by k data)
-       vals
-       (into [])))
+       vals))
 
 (defn patient-experience-of-gp-services
   "Patient experience of primary care - GP Services.
@@ -76,11 +80,11 @@
         indicator-values     (filter-dataset (:indicator-values recipe) data)
         numerators-by-year   (split-by-key :year numerators)
         denominators-by-year (split-by-key :year denominators)
-        numerator-sums       (mapv #(sum-sequence % :numerator) numerators-by-year)
-        denominator-sums     (mapv #(sum-sequence % :denominator) denominators-by-year)
+        numerator-sums       (map #(sum-sequence % :numerator) numerators-by-year)
+        denominator-sums     (map #(sum-sequence % :denominator) denominators-by-year)
         division-result      (map divide-seqs numerator-sums denominator-sums)
-        combined-data        (into [] (clojure.set/join division-result indicator-values))
-        final-dataset        (mapv subtract-seqs combined-data)]
+        combined-data        (lazy-seq (clojure.set/join division-result indicator-values))
+        final-dataset        (map subtract-seqs combined-data)]
 
     (enrich-dataset {:indicator-id (:indicator-id recipe)
                      :indicator-field :result}
@@ -94,6 +98,9 @@
 (defn process-patient-experience-recipes [ckan-client recipes]
   (mapcat #(patient-experience ckan-client %) recipes))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Simple datasets                                                                      ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn read-dataset
  "Reads data from CKAN for a given resource-id,
@@ -103,6 +110,7 @@
  (->> (storage/get-resource-data ckan-client resource_id)
       (filter-dataset recipe-map)
       (enrich-dataset recipe-map)))
+
 
 (defn read-config
   "Reads the config file and returns it as a string."
@@ -114,11 +122,11 @@
   needed for the board report."
   [ckan-client config-url]
   (let [config (read-config config-url)]
-    (concat (process-patient-experience-recipes ckan-client (:internal-calculations config))
-            (mapcat (fn [dataset-config]
-                      (read-dataset ckan-client dataset-config
-                                    (:resource-id dataset-config)))
-                    (:datasets config)))))
+    (lazy-cat (process-patient-experience-recipes ckan-client (:internal-calculations config))
+              (mapcat (fn [dataset-config]
+                        (read-dataset ckan-client dataset-config
+                                      (:resource-id dataset-config)))
+                      (:datasets config)))))
 
 (defn insert-boardreport-dataset
   "Calls create-boardreport-dataset and insert new
@@ -143,106 +151,6 @@
                                                            "fields"  fields})]
     (storage/insert-new-resource ckan-client new-dataset-id data)))
 
-(comment
-  ;; 23
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level description" :value "England"}]}
-                                      "dd24350b-0e0d-48ca-93c6-d2ece5b1ac4e")
-  ;; 45
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level description" :value "England"}]}
-                                      "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb")
-  ;; 46
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level description" :value "England"}]}
-                                      "9963285f-752f-4dbb-8c02-07868ae52905")
-  ;; 47
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level description" :value "England"}]}
-                                      "02d26183-1a69-4540-8254-00216622124e")
-  ;; 48
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level description" :value "England"}]}
-                                      "db911491-ac1b-4148-ab8c-a2e8596d5257")
-  ;; 52
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "81c8e579-cdeb-401e-bf1a-2e3bde98fc39")
-  ;; 56
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Breakdown" :value "England"}]}
-                                      "eb192498-8c9c-4746-a40a-a098dff69e46")
-  ;; 58
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "2102f836-072a-42a6-b4ca-ac6aa2f96562")
-  ;; 22
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "2b10e7b4-c799-44f9-81d6-3a42f4260893")
-  ;; 24
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "8b2dbabb-9b0a-4ea6-b357-74200ae4f311")
-  ;; 27
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "e2386960-b9e1-4d9f-ba8b-6d79c5c62d94")
-  ;; 28
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "bf9fff22-599e-4d58-8b78-961bc6773d62")
-  ;; 43
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "e1ec7ee1-d387-45e3-a0dd-3c8e3162e0e0")
-  ;; 65
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "e39649c2-e4dd-49b3-bb9d-ae7d7b69bd2d")
-  ;; 66
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "5c932116-a89c-4efc-9db9-f4b36e812ef7")
-  ;; 44
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "f581825b-cf3e-4f5d-a358-190dcc3f8a0e")
-  ;; 61
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "f581825b-cf3e-4f5d-a358-190dcc3f8a0e")
-  ;; 62
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value (rate)"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "aaa57c54-c747-4eb8-aa9e-f3da798372f3")
-  ;; 54
-  (kixi.nhs.board-report/read-dataset (:ckan-client system)
-                                      {:indicator-field "Indicator value"
-                                       :conditions [{:field "Level" :value "England"}]}
-                                      "3cb3fc90-3944-455a-97f0-50c9680184c7")
 
-  ;; 211
-  ;; This is an internal calculation. Recipe on "internal calculations.xlsx": Take away the indicator value
-  ;; (on column F) for males (gender referenced on column C) from the
-  ;; indicator value (on column F) for females (gender referenced on column C)
-
-  )
+;; Run:
+;; (insert-boardreport-dataset (:ckan-client system) "resources/config.edn")

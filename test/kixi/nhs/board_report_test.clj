@@ -10,7 +10,7 @@
          (board-report/filter-dataset
           {:indicator-id "22"
            :indicator-field :indicator_value
-           :conditions [{:field :level :value "England"}]
+           :conditions [{:field :level :values #{"England"}}]
            :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
           [{:level "England", :denominator "883852.0", :breakdown "England",
             :question_response_rate "97.9", :_id 1, :indicator_id nil,
@@ -28,7 +28,7 @@
   (is (empty? (board-report/filter-dataset
                {:indicator-id "22"
                 :indicator-field :value
-                :conditions [{:field :level :value "England"}]
+                :conditions [{:field :level :values #{"England"}}]
                 :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
                [{:level "England", :denominator "883852.0", :breakdown "England",
                  :question_response_rate "97.9", :_id 1, :indicator_id nil,
@@ -46,7 +46,7 @@
   (is (empty (board-report/filter-dataset
               {:indicator-id "22"
                :indicator-field :indicator_value
-               :conditions [{:field :level :value "Scotland"}]
+               :conditions [{:field :level :values #{"Scotland"}}]
                :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
               [{:level "England", :denominator "883852.0", :breakdown "England",
                 :question_response_rate "97.9", :_id 1, :indicator_id nil,
@@ -61,10 +61,10 @@
                 :year "2011/12", :level_description "England", :indicator_value "88.3",
                 :period_of_coverage "July 2011 to March 2012", :numerator "891213.9"}])))
   ;; Checks the sequence returned is empty when no dataset:
-  (is (empty? 
+  (is (empty?
        (board-report/filter-dataset {:indicator-id "22"
                                      :indicator-field :indicator_value
-                                     :conditions [{:field :level :value "England"}]
+                                     :conditions [{:field :level :values #{"England"}}]
                                      :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
                                     []))))
 
@@ -87,7 +87,7 @@
         (board-report/enrich-dataset
          {:indicator-id "22"
           :indicator-field :indicator_value
-          :conditions [{:field :level :value "Scotland"}]
+          :conditions [{:field :level :values #{"Scotland"}}]
           :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
          [{:level "England", :denominator "883852.0", :breakdown "England",
            :question_response_rate "97.9", :_id 1, :indicator_id nil,
@@ -105,12 +105,12 @@
         (board-report/enrich-dataset
          {:indicator-id "22"
           :indicator-field :indicator_value
-          :conditions [{:field :level :value "England"}]
+          :conditions [{:field :level :values #{"England"}}]
           :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
          (board-report/filter-dataset
           {:indicator-id "22"
            :indicator-field :indicator_value
-           :conditions [{:field :level :value "England"}]
+           :conditions [{:field :level :values #{"England"}}]
            :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
           [{:level "England", :denominator "883852.0",
             :breakdown "England", :question_response_rate "97.9",
