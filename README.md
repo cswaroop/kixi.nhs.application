@@ -5,7 +5,7 @@ Dev setup:
 
 1. In your home directory create a `.nhs.edn` with the contents below:
    ```edn
-   {:ckan-client {:site "<site>/api/3/action/"
+   {:ckan-client {:site "http://<site>/api/3/action/"
                   :api-key "<your_private_key>"}}
     ```
 

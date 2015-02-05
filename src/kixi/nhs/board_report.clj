@@ -32,7 +32,7 @@
                                                     ;; values is a set
                                                     (some values #{(get d field)})))
                                   conditions)
-                      (select-keys d [:year indicator-field])))
+                      (select-keys d [:year :period_of_coverage indicator-field])))
             data))))
 
 (defn enrich-dataset
@@ -44,6 +44,8 @@
     (mapv (fn [d]
             (-> d
                 (clojure.set/rename-keys {indicator-field :value})
+                ;; period_of_coverage is a PK so cannot be null. Using year if it's empty
+                (cond-> (empty? (:period_of_coverage d)) (assoc :period_of_coverage (:year d)))
                 (assoc :indicator_id indicator-id))) data)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -112,6 +114,10 @@
       (enrich-dataset recipe-map)))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Process all recipes and update board report resource                                 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn read-config
   "Reads the config file and returns it as a string."
   [url]
@@ -128,14 +134,14 @@
                                       (:resource-id dataset-config)))
                       (:datasets config)))))
 
-(defn insert-boardreport-dataset
+(defn insert-board-report-dataset
   "Calls create-boardreport-dataset and insert new
   dataset into ckan."
   [ckan-client config-url]
   (let [now             (now->str)
         new-dataset     (json/encode {:owner_org "kixi"
-                                      :title (str "Board report data" " - " now)
-                                      :name (str "board_report_data" "_" now)
+                                      :title (str "Board report data TEST")
+                                      :name (str "board_report_dataset_test")
                                       :author "Kixi"})
         new-dataset-id  (storage/create-new-dataset ckan-client new-dataset)
         new-resource    (json/encode {:package_id new-dataset-id
@@ -145,12 +151,35 @@
         records         (create-boardreport-dataset ckan-client config-url)
         fields          [{"id" "indicator_id" "type" "text"}
                          {"id" "value" "type" "text"}
-                         {"id" "year" "type" "text"}]
+                         {"id" "year" "type" "text"}
+                         {"id" "period_of_coverage" "type" "text"}]
         data            (data/prepare-resource-for-insert new-dataset-id new-resource-id
                                                           {"records" records
-                                                           "fields"  fields})]
+                                                           "fields"  fields
+                                                           "primary_key" "indicator_id,year,period_of_coverage"})]
     (storage/insert-new-resource ckan-client new-dataset-id data)))
 
 
-;; Run:
-;; (insert-boardreport-dataset (:ckan-client system) "resources/config.edn")
+(defn update-board-report-dataset
+  "Update existing rows in the table and append any new ones. Primary key is:
+  (indicator_id, year, period_of_coverage)"
+  [ckan-client resource-id config-url]
+  (let [records         (create-boardreport-dataset ckan-client config-url)
+        fields          [{"id" "indicator_id" "type" "text"}
+                         {"id" "value" "type" "text"}
+                         {"id" "year" "type" "text"}
+                         {"id" "period_of_coverage" "type" "text"}]
+        data            (json/encode {"records" records
+                                      "method" "upsert"
+                                      "force" true
+                                      "resource_id" resource-id})]
+
+    (storage/update-existing-resource ckan-client resource-id data)))
+
+;; To insert new board report resource:
+;; (insert-board-report-dataset (:ckan-client system) "resources/config.edn")
+;; To update existing board resource (preferrable):
+;; TEST
+;; (update-board-report-dataset (:ckan-client system) "68d5438a-e4d3-4be0-8e34-3ccd40930dae" "resources/config.edn")
+;; USED BY UI:
+;; (update-board-report-dataset (:ckan-client system) "ed59dfc4-3076-4e84-806e-7a47d2321f36" "resources/config.edn")

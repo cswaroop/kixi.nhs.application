@@ -66,7 +66,13 @@
   successfully."
   [ckan-client package_id resource]
   (let [response (ckan/datastore-insert ckan-client package_id resource)]
-    (-> response :success)))
+    (:success response)))
+
+(defn update-existing-resource
+  "Updates resource with a given resource_id and data."
+  [ckan-client resource_id resource]
+  (let [response (ckan/datastore-upsert ckan-client resource_id resource)]
+    (:success response)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Organization                                                ;;

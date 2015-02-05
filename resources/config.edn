@@ -86,4 +86,54 @@
                                                                                            "Any other Asian background"}}]}
                           :indicator-values {:indicator-field :indicator_value
                                              :conditions [{:field :level_description
+                                                           :values #{"English / Welsh / Scottish / Northern Irish / British"}}]}}
+                         {:indicator-id "214"
+                          :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
+                          :numerators {:indicator-field :numerator
+                                       :conditions [{:field :level_description
+                                                     :values #{"Afican" "Caribbean"
+                                                               "Any other Black / African / Caribbean background"}}]}
+                          :denominators {:indicator-field :denominator
+                                         :conditions [{:field :level_description
+                                                       :values #{"Afican" "Caribbean"
+                                                                 "Any other Black / African / Caribbean background"}}]}
+                          :indicator-values {:indicator-field :indicator_value
+                                             :conditions [{:field :level_description
+                                                           :values #{"English / Welsh / Scottish / Northern Irish / British"}}]}}
+                         {:indicator-id "215"
+                          :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
+                          :numerators {:indicator-field :numerator
+                                       :conditions [{:field :level_description
+                                                     :values #{"Chinese" "Arab" "Any other ethnic group"}}]}
+                          :denominators {:indicator-field :denominator
+                                         :conditions [{:field :level_description
+                                                       :values #{"Chinese" "Arab" "Any other ethnic group"}}]}
+                          :indicator-values {:indicator-field :indicator_value
+                                             :conditions [{:field :level_description
+                                                           :values #{"English / Welsh / Scottish / Northern Irish / British"}}]}}
+                         {:indicator-id "216"
+                          :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
+                          :numerators {:indicator-field :numerator
+                                       :conditions [{:field :level_description
+                                                     :values #{"White and Black Caribbean" "White and Black African"
+                                                               "White and Asian" "Any other Mixed / multiple ethnic background"}}]}
+                          :denominators {:indicator-field :denominator
+                                         :conditions [{:field :level_description
+                                                       :values #{"White and Black Caribbean" "White and Black African"
+                                                                 "White and Asian" "Any other Mixed / multiple ethnic background"}}]}
+                          :indicator-values {:indicator-field :indicator_value
+                                             :conditions [{:field :level_description
+                                                           :values #{"English / Welsh / Scottish / Northern Irish / British"}}]}}
+                         {:indicator-id "217"
+                          :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
+                          :numerators {:indicator-field :numerator
+                                       :conditions [{:field :level_description
+                                                     :values #{"Irish" "Gypsy or Irish Traveller"
+                                                               "Any other White background"}}]}
+                          :denominators {:indicator-field :denominator
+                                         :conditions [{:field :level_description
+                                                       :values #{"Irish" "Gypsy or Irish Traveller"
+                                                                 "Any other White background"}}]}
+                          :indicator-values {:indicator-field :indicator_value
+                                             :conditions [{:field :level_description
                                                            :values #{"English / Welsh / Scottish / Northern Irish / British"}}]}}]}
