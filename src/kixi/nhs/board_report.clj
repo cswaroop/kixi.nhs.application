@@ -21,6 +21,8 @@
   (let [now (t/now)]
     (tf/unparse custom-formatter now)))
 
+(defn not-nil? [x] (not (nil? x)))
+
 (defn filter-dataset
   "Filters dataset according to the given recipe."
   [recipe-map data]
@@ -52,45 +54,62 @@
 ;; Internal calculations                                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defn add-when-not-empty
+  "Sums values in a sequence if it's not empty.
+  Otherwise returns nil."
+  [data]
+  (when (seq data)
+    (apply + (map transform/parse-number data))))
+
 (defn sum-sequence [data k]
-  (let [timestamp    (-> data first :year)]
-    {:year timestamp
+  (let [{:keys [year period_of_coverage]} (first data)]
+    {:year year :period_of_coverage period_of_coverage
      :sum (->> (map k data)
-               (map transform/parse-number)
-               (apply +))}))
+               (remove #(not (seq %)))
+               add-when-not-empty)}))
 
 (defn divide-seqs [d1 d2]
-  (let [timestamp (:year d1)]
-    {:year timestamp
-     :division-result (/ (:sum d1) (:sum d2))}))
+  (let [{:keys [year period_of_coverage]} d1
+        sum1 (:sum d1)
+        sum2 (:sum d2)]
+    {:year year :period_of_coverage period_of_coverage
+     :division-result (when (and (not-nil? sum1) (not-nil? sum2))
+                        (float (/ (:sum d1) (:sum d2))))}))
 
 (defn subtract-seqs [d]
-  (let [timestamp (:year d)]
-    {:year timestamp
-     :result (str (- (:division-result d) (/ (transform/parse-number (:indicator_value d)) 100)))}))
+  (let [{:keys [year period_of_coverage division-result indicator_value]} d]
+    {:year year :period_of_coverage period_of_coverage
+     :result (when (and (not-nil? division-result) (not-nil? indicator_value))
+               (str (float (- division-result (/ (transform/parse-number indicator_value) 100)))))}))
 
 (defn split-by-key [k data]
   (->> (group-by k data)
        vals))
 
+(defn sums-for-field [field k data]
+  (->> (filter-dataset field data)
+       (split-by-key :year)
+       (map #(sum-sequence % k))))
+
+(defn divide-sums [numerator-sums denominator-sums]
+  (map divide-seqs numerator-sums denominator-sums))
+
+(defn final-dataset [indicator-id numerator-sums denominator-sums indicator-values]
+  (->> (divide-sums numerator-sums denominator-sums)
+       (clojure.set/join indicator-values)
+       (map subtract-seqs)
+       (enrich-dataset {:indicator-id indicator-id
+                        :indicator-field :result})))
+
 (defn patient-experience-of-gp-services
   "Patient experience of primary care - GP Services.
   White British compared to Asian or Asian British."
   [recipe data]
-  (let [numerators           (filter-dataset (:numerators recipe) data)
-        denominators         (filter-dataset (:denominators recipe) data)
-        indicator-values     (filter-dataset (:indicator-values recipe) data)
-        numerators-by-year   (split-by-key :year numerators)
-        denominators-by-year (split-by-key :year denominators)
-        numerator-sums       (map #(sum-sequence % :numerator) numerators-by-year)
-        denominator-sums     (map #(sum-sequence % :denominator) denominators-by-year)
-        division-result      (map divide-seqs numerator-sums denominator-sums)
-        combined-data        (lazy-seq (clojure.set/join division-result indicator-values))
-        final-dataset        (map subtract-seqs combined-data)]
+  (let [indicator-values     (filter-dataset (:indicator-values recipe) data)
+        numerator-sums       (sums-for-field (:numerators recipe) :numerator data)
+        denominator-sums     (sums-for-field (:denominators recipe) :denominator data)]
 
-    (enrich-dataset {:indicator-id (:indicator-id recipe)
-                     :indicator-field :result}
-                    final-dataset)))
+    (final-dataset (:indicator-id recipe) numerator-sums denominator-sums indicator-values)))
 
 (defn patient-experience [ckan-client recipe]
   (let  [resource_id (:resource-id recipe)
@@ -105,13 +124,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn read-dataset
- "Reads data from CKAN for a given resource-id,
+  "Reads data from CKAN for a given resource-id,
   filters on conditions and outputs a vector of
   maps where each map is enriched with indicator-id."
- [ckan-client recipe-map resource_id]
- (->> (storage/get-resource-data ckan-client resource_id)
-      (filter-dataset recipe-map)
-      (enrich-dataset recipe-map)))
+  [ckan-client recipe-map resource_id]
+  (->> (storage/get-resource-data ckan-client resource_id)
+       (filter-dataset recipe-map)
+       (enrich-dataset recipe-map)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -128,11 +147,11 @@
   needed for the board report."
   [ckan-client config-url]
   (let [config (read-config config-url)]
-    (lazy-cat (process-patient-experience-recipes ckan-client (:internal-calculations config))
-              (mapcat (fn [dataset-config]
-                        (read-dataset ckan-client dataset-config
-                                      (:resource-id dataset-config)))
-                      (:datasets config)))))
+    (concat (process-patient-experience-recipes ckan-client (:internal-calculations config))
+            (mapcat (fn [dataset-config]
+                      (read-dataset ckan-client dataset-config
+                                    (:resource-id dataset-config)))
+                    (:datasets config)))))
 
 (defn insert-board-report-dataset
   "Calls create-boardreport-dataset and insert new
