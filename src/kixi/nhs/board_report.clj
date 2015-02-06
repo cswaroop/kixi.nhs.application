@@ -23,29 +23,28 @@
 
 (defn not-nil? [x] (not (nil? x)))
 
+(defn all-fields-exist? [fields row]
+  (let [headers (into #{} (keys row))]
+    (every? #(contains? headers %) fields)))
+
 (defn filter-dataset
   "Filters dataset according to the given recipe."
   [recipe-map data]
-  (let [{:keys [indicator-field conditions indicator-id]} recipe-map]
-    ;; Go through the data sequence and 1.Check indicator field,
-    ;; 2.Check the conditions, 3.Keep "Year" and indicator value.
-    (when (contains? (first data) indicator-field)
+  (let [{:keys [conditions indicator-id fields-to-extract]} recipe-map]
+    (when (all-fields-exist? fields-to-extract (first data))
       (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field values]} condition]
                                                     ;; values is a set
                                                     (some values #{(get d field)})))
                                   conditions)
-                      (select-keys d [:year :period_of_coverage indicator-field])))
+                      (select-keys d fields-to-extract)))
             data))))
 
 (defn enrich-dataset
   "Enrichs dataset with indicator-id."
   [recipe-map data]
-  (let [{:keys [indicator-field indicator-id]} recipe-map]
-    ;; Go through the data sequence and 1.Change the key map indicator-field
-    ;; for value, 2.Add the indicator-id.
+  (let [{:keys [indicator-id]} recipe-map]
     (mapv (fn [d]
             (-> d
-                (clojure.set/rename-keys {indicator-field :value})
                 ;; period_of_coverage is a PK so cannot be null. Using year if it's empty
                 (cond-> (empty? (:period_of_coverage d)) (assoc :period_of_coverage (:year d)))
                 (assoc :indicator_id indicator-id))) data)))
@@ -53,6 +52,47 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Internal calculations                                                                ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn split-by-key
+  "Turns a sequence of maps into a sequence of sequences,
+  where each nested sequence corresponds to a single group."
+  [k data]
+  (->> (group-by k data)
+       vals))
+
+;; Step 1. To the most deprived group, deprivation group 1, attach a value of 0.1. To deprivation group 2, attach a value of 0.3. To deprivation group 3, attach a value of 0.5. To deprivation group 4 attach a value of 0.7 and to the least deprived, deprivation group 5, attach a value of 0.9 (the deprivation groups are refereenced on column D).
+
+;; Step 2 Use the excel slope between the indicator values that corresponds to each deprivation group and the values that were attached earlier to each deprivation group.
+
+;; Step 3 Divide the slope value found in step 2 by the indicator value of deprivation group 3.
+
+;; Step 4 Repeat steps 1 to 3 for every financial year referenced on column A.
+
+;; Step 5 Calculate the difference between the latest value calculated on step 3 and the same value for 5 years previously to the latest year. In the end, divide this difference by the value  calculated on step 3 for five years previously to the latest year (See Sheet "Example")
+
+(defn average
+  "Calculates average of a collection."
+  [coll]
+  (/ (reduce + coll) (count coll)))
+
+(defn deprivation-groups-avg
+  "Average the deprivation values two by two so that you end up with 5 deprivation groups.
+  i.e. average the values for deprivation groups 1 and 2 to get a new value for a new
+  deprivation group 1. Then average the values for deprivation groups 3 and 4 to get a valu
+  e for a new deprivation group 2 etc until averaging values for deprivation groups 9 and 10
+  to get a value for a new deprivation group 5. then proceed with the steps."
+  [data]
+  (let [grouped-by-year (split-by-key :year data)
+        ]))
+
+(defn patient-experience-deprivation-analysis [ckan-client]
+  (let [data       (storage/get-resource-data ckan-client "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb")
+        filtered   (filter-dataset {:indicator-field :indicator_value
+                                    :conditions [{:field :breakdown
+                                                  :values #{"Deprivation decile"}}]} data)
+        avg-groups (deprivation-groups-avg filtered)
+        ])
+  )
 
 (defn add-when-not-empty
   "Sums values in a sequence if it's not empty.
@@ -79,12 +119,8 @@
 (defn subtract-seqs [d]
   (let [{:keys [year period_of_coverage division-result indicator_value]} d]
     {:year year :period_of_coverage period_of_coverage
-     :result (when (and (not-nil? division-result) (not-nil? indicator_value))
-               (str (float (- division-result (/ (transform/parse-number indicator_value) 100)))))}))
-
-(defn split-by-key [k data]
-  (->> (group-by k data)
-       vals))
+     :value (when (and (not-nil? division-result) (not-nil? indicator_value))
+              (str (float (- division-result (/ (transform/parse-number indicator_value) 100)))))}))
 
 (defn sums-for-field [field k data]
   (->> (filter-dataset field data)
@@ -98,8 +134,7 @@
   (->> (divide-sums numerator-sums denominator-sums)
        (clojure.set/join indicator-values)
        (map subtract-seqs)
-       (enrich-dataset {:indicator-id indicator-id
-                        :indicator-field :result})))
+       (enrich-dataset {:indicator-id indicator-id})))
 
 (defn patient-experience-of-gp-services
   "Patient experience of primary care - GP Services.
@@ -130,7 +165,8 @@
   [ckan-client recipe-map resource_id]
   (->> (storage/get-resource-data ckan-client resource_id)
        (filter-dataset recipe-map)
-       (enrich-dataset recipe-map)))
+       (enrich-dataset recipe-map)
+       (map #(clojure.set/rename-keys % {:indicator_value :value :indicator_value_rate :value}))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -184,10 +220,6 @@
   (indicator_id, year, period_of_coverage)"
   [ckan-client resource-id config-url]
   (let [records         (create-boardreport-dataset ckan-client config-url)
-        fields          [{"id" "indicator_id" "type" "text"}
-                         {"id" "value" "type" "text"}
-                         {"id" "year" "type" "text"}
-                         {"id" "period_of_coverage" "type" "text"}]
         data            (json/encode {"records" records
                                       "method" "upsert"
                                       "force" true
