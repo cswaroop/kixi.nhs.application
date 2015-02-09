@@ -15,6 +15,7 @@
 
                  ;; data
                  [cheshire                   "5.4.0"]
+                 [incanter                   "1.5.6"]
 
                  ;; logging
                  [org.clojure/tools.logging  "0.3.0"]
