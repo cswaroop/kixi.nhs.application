@@ -3,8 +3,9 @@
   (:require [kixi.ckan             :as ckan]
             [kixi.nhs.data.storage :as storage]
             [clojure.tools.logging :as log]
-            [clj-time.core           :as t]
-            [clj-time.format         :as tf]))
+            [clj-time.core         :as t]
+            [clj-time.format       :as tf]
+            [clojure.edn           :as edn]))
 
 (defn not-nil? [x] (not (nil? x)))
 
@@ -15,7 +16,7 @@
   (when (not-nil? s)
     (let [parsed (clojure.string/replace s #"," "")]
       (when (re-find #"^-?\d+\.?\d*$" parsed)
-        (read-string parsed)))))
+        (edn/read-string parsed)))))
 
 (defn get-value [k m]
   (-> (get m k)
