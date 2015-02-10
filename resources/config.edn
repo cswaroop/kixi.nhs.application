@@ -137,9 +137,15 @@
                                       :indicator-values {:fields-to-extract [:indicator_value :year :period_of_coverage]
                                                          :conditions [{:field :level_description
                                                                        :values #{"English / Welsh / Scottish / Northern Irish / British"}}]}}]
-                         :deprivation [{:indicator_id "212"
+                         :deprivation [{:indicator-id "212"
                                         :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
                                         :fields-to-extract [:indicator_value :year
                                                             :period_of_coverage :level]
                                         :conditions [{:field :breakdown
-                                                      :values #{"Deprivation decile"}}]}]}}
+                                                      :values #{"Deprivation decile"}}]}]
+                         :gender [{:indicator-id "211"
+                                   :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
+                                   :fields-to-extract [:indicator_value :year
+                                                       :period_of_coverage :level]
+                                   :conditions [{:field :breakdown
+                                                 :values #{"Gender"}}]}]}}

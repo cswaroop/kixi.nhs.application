@@ -73,7 +73,7 @@
        (map subtract-indicator-value)
        (transform/enrich-dataset {:indicator-id indicator-id})))
 
-(defn process-ethnicity-analysis
+(defn ethnicity-analysis
   "Patient experience of primary care - GP Services using
   ethnicities factor."
   [recipe data]
@@ -83,10 +83,10 @@
 
     (final-dataset (:indicator-id recipe) numerator-sums denominator-sums indicator-values)))
 
-(defn ethnicity-analysis [ckan-client recipe]
+(defn process-ethnicity-analysis [ckan-client recipe]
   (let  [resource_id (:resource-id recipe)
          data        (storage/get-resource-data ckan-client resource_id)]
-    (process-ethnicity-analysis recipe data)))
+    (ethnicity-analysis recipe data)))
 
-(defn patient-experience-ethnicity-analysis [ckan-client recipes]
-  (mapcat #(ethnicity-analysis ckan-client %) recipes))
+(defn analysis [ckan-client recipes]
+  (mapcat #(process-ethnicity-analysis ckan-client %) recipes))

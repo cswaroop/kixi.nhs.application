@@ -1,12 +1,13 @@
 (ns kixi.nhs.board-report
-  (:require [kixi.nhs.data.storage                   :as storage]
-            [clojure.tools.logging                   :as log]
-            [clojure.edn                             :as edn]
-            [cheshire.core                           :as json]
-            [kixi.ckan.data                          :as data]
-            [kixi.nhs.data.transform                 :as transform]
-            [kixi.nhs.patient-experience.deprivation :as deprivation]
-            [kixi.nhs.patient-experience.ethnicity   :as ethnicity]))
+  (:require [kixi.nhs.data.storage                         :as storage]
+            [clojure.tools.logging                         :as log]
+            [clojure.edn                                   :as edn]
+            [cheshire.core                                 :as json]
+            [kixi.ckan.data                                :as data]
+            [kixi.nhs.data.transform                       :as transform]
+            [kixi.nhs.patient-experience.deprivation       :as deprivation]
+            [kixi.nhs.patient-experience.ethnicity         :as ethnicity]
+            [kixi.nhs.patient-experience.gender-comparison :as gender]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Simple datasets                                                                      ;;
@@ -38,8 +39,9 @@
   [ckan-client config-url]
   (let [config                (read-config config-url)
         internal-calculations (:internal-calculations config)]
-    (concat (ethnicity/patient-experience-ethnicity-analysis ckan-client (:enthicity internal-calculations))
-            (deprivation/patient-experience-deprivation-analysis ckan-client (:deprivation internal-calculations))
+    (concat (ethnicity/analysis ckan-client (:enthicity internal-calculations))
+            (deprivation/analysis ckan-client (:deprivation internal-calculations))
+            (gender/analysis ckan-client (:gender internal-calculations))
             (mapcat (fn [dataset-config]
                       (read-dataset ckan-client dataset-config
                                     (:resource-id dataset-config)))

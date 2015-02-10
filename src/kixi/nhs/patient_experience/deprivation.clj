@@ -100,7 +100,7 @@
          (map deprivation-groups-avg)
          (deprivation-analysis))))
 
-(defn patient-experience-deprivation-analysis
+(defn analysis
   "Receives a sequence of deprivation recipes.
   Returns a sequences of all results from those recipes combined."
   [ckan-client recipes]

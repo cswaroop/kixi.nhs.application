@@ -3,15 +3,20 @@
   (:require [kixi.ckan             :as ckan]
             [kixi.nhs.data.storage :as storage]
             [clojure.tools.logging :as log]
-            [clj-time.core           :as t]
-            [clj-time.format         :as tf]))
+            [clj-time.core         :as t]
+            [clj-time.format       :as tf]
+            [clojure.edn           :as edn]))
+
+(defn not-nil? [x] (not (nil? x)))
 
 (defn parse-number
-  "Reads a number from a string. Returns nil if not a number."
+  "Reads a number from a string. Returns nil if not a number
+  or when the value passed is nil."
   [s]
-  (let [parsed (clojure.string/replace s #"," "")]
-    (when (re-find #"^-?\d+\.?\d*$" parsed)
-      (read-string parsed))))
+  (when (not-nil? s)
+    (let [parsed (clojure.string/replace s #"," "")]
+      (when (re-find #"^-?\d+\.?\d*$" parsed)
+        (edn/read-string parsed)))))
 
 (defn get-value [k m]
   (-> (get m k)
@@ -59,8 +64,6 @@
   []
   (let [now (t/now)]
     (tf/unparse custom-formatter now)))
-
-(defn not-nil? [x] (not (nil? x)))
 
 (defn all-fields-exist?
   "Checks whether all fields are present in the first row
