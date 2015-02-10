@@ -15,8 +15,8 @@
 (defn deprivation-groups-avg
   "Average the deprivation values two by two so that you end up with 5 deprivation groups.
   i.e. average the values for deprivation groups 1 and 2 to get a new value for a new
-  deprivation group 1. Then average the values for deprivation groups 3 and 4 to get a valu
-  e for a new deprivation group 2 etc until averaging values for deprivation groups 9 and 10
+  deprivation group 1. Then average the values for deprivation groups 3 and 4 to get a value
+  for a new deprivation group 2 etc until averaging values for deprivation groups 9 and 10
   to get a value for a new deprivation group 5. then proceed with the steps."
   [data]
   (->> (remove #(= (:level %) "Unknown") data)
