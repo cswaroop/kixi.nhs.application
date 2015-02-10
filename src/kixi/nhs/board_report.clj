@@ -21,7 +21,8 @@
   (->> (storage/get-resource-data ckan-client resource_id)
        (transform/filter-dataset recipe-map)
        (transform/enrich-dataset recipe-map)
-       (map #(clojure.set/rename-keys % {:indicator_value :value :indicator_value_rate :value}))))
+       (map #(clojure.set/rename-keys % {:indicator_value :value :indicator_value_rate :value
+                                         :average_health_gain :value}))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

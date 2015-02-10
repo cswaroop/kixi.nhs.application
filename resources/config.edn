@@ -73,7 +73,27 @@
             {:indicator-id "54"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "3cb3fc90-3944-455a-97f0-50c9680184c7"}]
+             :resource-id "3cb3fc90-3944-455a-97f0-50c9680184c7"}
+            {:indicator-id "33"
+             :fields-to-extract [:average_health_gain :year :period_of_coverage]
+             :conditions [{:field :procedure :values #{"Hip replacement"}}
+                          {:field :breakdown :values #{"England"}}]
+             :resource-id "df681d82-19f0-4584-8cc2-47cecad664ad"}
+            {:indicator-id "34"
+             :fields-to-extract [:average_health_gain :year :period_of_coverage]
+             :conditions [{:field :procedure :values #{"Knee replacement"}}
+                          {:field :breakdown :values #{"England"}}]
+             :resource-id "df681d82-19f0-4584-8cc2-47cecad664ad"}
+            {:indicator-id "35"
+             :fields-to-extract [:average_health_gain :year :period_of_coverage]
+             :conditions [{:field :procedure :values #{"Groin hernia"}}
+                          {:field :breakdown :values #{"England"}}]
+             :resource-id "df681d82-19f0-4584-8cc2-47cecad664ad"}
+            {:indicator-id "36"
+             :fields-to-extract [:average_health_gain :year :period_of_coverage]
+             :conditions [{:field :procedure :values #{"Varicose vein"}}
+                          {:field :breakdown :values #{"England"}}]
+             :resource-id "df681d82-19f0-4584-8cc2-47cecad664ad"}]
  :internal-calculations {:ethnicity [{:indicator-id "213"
                                       :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
                                       :numerators {:fields-to-extract [:numerator :year :period_of_coverage]
