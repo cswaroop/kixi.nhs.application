@@ -2,16 +2,16 @@
   "Useful functions for interacting with the pipeline from the repl."
   (:require [kixipipe.scheduler       :as s]
             [kixipipe.pipeline        :refer [submit-item shutdown-pipe]]
-            [modular                  :refer (system)]))
+            [user                     :refer (system)]))
 
 (defmacro defreplmethods
   [name & options]
   `(let [options# (apply hash-map '~options)]
      (defn
        ~name
-       ([~'type] (submit-item (-> system :pipeline :head)
-                    (merge {:type ~'type}
-                           options#)))
+       ([~'resource-id] (submit-item (-> system :pipeline :head)
+                                     (assoc options# :resource-id ~'resource-id)))
        ([] (~name nil)))))
 
-(defreplmethods merge-datasets :dest :combined-datasets :type :merged)
+(defreplmethods update-board-report :dest :board-report :type :update)
+(defreplmethods insert-board-report :dest :board-report :type :insert)

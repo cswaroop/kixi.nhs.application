@@ -6,8 +6,12 @@ Dev setup:
 1. In your home directory create a `.nhs.edn` with the contents below:
    ```edn
    {:ckan-client {:site "http://<site>/api/3/action/"
-                  :api-key "<your_private_key>"}}
-    ```
+                  :api-key "<your_private_key>"}
+    :schedule {:process-job-schedule
+               ; s   m  h  d  M D
+               {"0  36 11  *  * ?" {:dest :board-report :type :update :resource-id "68d5438a-e4d3-4be0-8e34-3ccd40930d"}}}
+   }
+   ```
 
 2. Do `M-x cider-jack-in` in kixi.nhs.application project
 3. Run `(go)`
