@@ -18,7 +18,7 @@
         sum2 (:sum d2)]
     {:year year :period_of_coverage period_of_coverage
      :division-result (when (and (transform/not-nil? sum1) (transform/not-nil? sum2))
-                        (float (/ (:sum d1) (:sum d2))))}))
+                        (float (/ sum1 sum2)))}))
 
 (defn subtract-indicator-value
   "Gets a map with division result and indicator value and
@@ -38,7 +38,7 @@
   [field k data]
   (->> (transform/filter-dataset field data)
        (transform/split-by-key :year)
-       (map #(transform/sum-sequence k %))))
+       (map #(transform/sum-sequence k [:numerator :denominator] %))))
 
 (defn divide-sums
   "Gets a sequence of numerator sums and denominator sums
@@ -53,6 +53,10 @@
   (->> (divide-sums numerator-sums denominator-sums)
        (clojure.set/join indicator-values)
        (map subtract-indicator-value)
+       (map #(assoc % :level (str "\""(-> numerator-sums first :level)
+                                  "\" / \""
+                                  (-> indicator-values first :level) "\"")
+                    :breakdown (-> indicator-values first :breakdown)))
        (transform/enrich-dataset {:indicator-id indicator-id})))
 
 (defn ethnicity-analysis

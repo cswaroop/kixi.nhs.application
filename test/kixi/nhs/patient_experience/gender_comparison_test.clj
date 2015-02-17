@@ -67,8 +67,10 @@
                :indicator_value "85.6",
                :period_of_coverage "July 2012 to March 2013"}]]
     (testing "Testing gender analysis calculation."
-      (is (= [{:indicator_id "211" :year "2013/14", :period_of_coverage "July 2013 to March 2014", :value "0.7999999999999972"}
-              {:indicator_id "211" :year "2012/13", :period_of_coverage "July 2012 to March 2013", :value "1.0999999999999943"}]
+      (is (= [{:indicator_id "211" :year "2013/14", :period_of_coverage "July 2013 to March 2014", :value "0.7999999999999972"
+               :breakdown "Gender" :level "Female - Male"}
+              {:indicator_id "211" :year "2012/13", :period_of_coverage "July 2012 to March 2013", :value "1.0999999999999943"
+               :breakdown "Gender" :level "Female - Male"}]
              (gender/gender-analysis {:indicator-id "211"
                                       :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
                                       :fields-to-extract [:indicator_value :year
@@ -76,7 +78,8 @@
                                       :conditions [{:field :breakdown
                                                     :values #{"Gender"}}]}
                                      data)))
-      (is (= [{:indicator_id "211" :year "2011", :period_of_coverage "2011", :value "-5"}]
+      (is (= [{:indicator_id "211" :year "2011", :period_of_coverage "2011", :value "-5"
+               :breakdown "Gender" :level "Female - Male"}]
              (gender/gender-analysis {:indicator-id "211"
                                       :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
                                       :fields-to-extract [:indicator_value :year

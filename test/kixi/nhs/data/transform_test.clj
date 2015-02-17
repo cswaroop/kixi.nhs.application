@@ -63,15 +63,7 @@
                   :fields-to-extract [:value :year :period_of_coverage]
                   :conditions [{:field :level :values #{"England"}}]
                   :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
-                 [{:level "England", :denominator "883852.0", :breakdown "England",
-                   :question_response_rate "97.9", :_id 1, :indicator_id nil,
-                   :year "2013/14", :level_description "England", :indicator_value "85.7",
-                   :period_of_coverage "July 2013 to March 2014", :numerator "757456.1"}
-                  {:level "England", :denominator "948507.5", :breakdown "England",
-                   :question_response_rate "97.7", :_id 2, :indicator_id nil,
-                   :year "2012/13", :level_description "England", :indicator_value "86.7",
-                   :period_of_coverage "July 2012 to March 2013", :numerator "822728.3"}
-                  {:level "Wales", :denominator "1009576.2", :breakdown "England",
+                 [{:level "Wales", :denominator "1009576.2", :breakdown "England",
                    :question_response_rate "97.3", :_id 3, :indicator_id nil,
                    :year "2011/12", :level_description "England", :indicator_value "88.3",
                    :period_of_coverage "July 2011 to March 2012", :numerator "891213.9"}])))
@@ -156,25 +148,45 @@
     (is (= {:year "2012/13" :sum 50263.6 :period_of_coverage "July 2012 to March 2013"}
            (transform/sum-sequence
             :denominator
+            [:denominator]
             [{:denominator "49962.0" :period_of_coverage "July 2012 to March 2013" :year "2012/13"}
              {:denominator "301.6" :period_of_coverage "July 2012 to March 2013" :year "2012/13"}])))
     (is (= {:year "2012" :sum 15 :period_of_coverage nil}
            (transform/sum-sequence
             :denominator
+            [:denominator]
             [{:denominator "10" :period_of_coverage nil :year "2012"}
              {:denominator "5" :period_of_coverage nil :year "2012"}])))
-    (is (= {:year "2012" :sum nil :period_of_coverage nil}
+    (is (= {:year "2012" :sum nil}
            (transform/sum-sequence
             :denominator
+            [:denominator]
             [{:denominator "" :year "2012"}
              {:denominator "" :year "2012"}])))
-    (is (= {:year "2012" :sum nil :period_of_coverage nil}
+    (is (= {:year "2012" :sum nil}
            (transform/sum-sequence
             :denominator
+            [:denominator]
             [{:denominator nil :year "2012"}
              {:denominator nil :year "2012"}])))
-    (is (= {:year "2012" :sum 1 :period_of_coverage nil}
+    (is (= {:year "2012" :sum 1}
            (transform/sum-sequence
             :denominator
+            [:denominator]
             [{:denominator "1" :year "2012"}
              {:denominator nil :year "2012"}])))))
+
+(deftest divide-test
+  (testing "Testing division."
+    (is (= 5.0
+           (transform/divide 25 5)))
+    (is  (nil?
+          (transform/divide 25 0)))
+    (is (zero?
+         (transform/divide 0 1)))
+    (is (nil?
+         (transform/divide nil 1)))
+    (is (nil?
+         (transform/divide nil nil)))
+    (is (nil?
+         (transform/divide 1 nil)))))
