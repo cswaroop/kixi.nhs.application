@@ -60,7 +60,7 @@
   [ckan-client config-url]
   (let [config                (read-config config-url)
         internal-calculations (:internal-calculations config)]
-    (concat (ethnicity/analysis ckan-client (:enthicity internal-calculations))
+    (concat (ethnicity/analysis ckan-client (:ethnicity internal-calculations))
             (deprivation/analysis ckan-client (:deprivation internal-calculations))
             (gender/analysis ckan-client (:gender internal-calculations))
             (end-of-life-care ckan-client (:end-of-life-care internal-calculations))
