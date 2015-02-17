@@ -150,3 +150,31 @@
   (testing "Testing function to check whether all fields a"
     (is (transform/all-fields-exist? [:year :id] {:year "2014" :id "5" :value 67}))
     (is (not (transform/all-fields-exist? [:year :id] {:year "2014" :value 67})))))
+
+(deftest sum-sequence-test
+  (testing "Testing adding up values for a given key"
+    (is (= {:year "2012/13" :sum 50263.6 :period_of_coverage "July 2012 to March 2013"}
+           (transform/sum-sequence
+            :denominator
+            [{:denominator "49962.0" :period_of_coverage "July 2012 to March 2013" :year "2012/13"}
+             {:denominator "301.6" :period_of_coverage "July 2012 to March 2013" :year "2012/13"}])))
+    (is (= {:year "2012" :sum 15 :period_of_coverage nil}
+           (transform/sum-sequence
+            :denominator
+            [{:denominator "10" :period_of_coverage nil :year "2012"}
+             {:denominator "5" :period_of_coverage nil :year "2012"}])))
+    (is (= {:year "2012" :sum nil :period_of_coverage nil}
+           (transform/sum-sequence
+            :denominator
+            [{:denominator "" :year "2012"}
+             {:denominator "" :year "2012"}])))
+    (is (= {:year "2012" :sum nil :period_of_coverage nil}
+           (transform/sum-sequence
+            :denominator
+            [{:denominator nil :year "2012"}
+             {:denominator nil :year "2012"}])))
+    (is (= {:year "2012" :sum 1 :period_of_coverage nil}
+           (transform/sum-sequence
+            :denominator
+            [{:denominator "1" :year "2012"}
+             {:denominator nil :year "2012"}])))))

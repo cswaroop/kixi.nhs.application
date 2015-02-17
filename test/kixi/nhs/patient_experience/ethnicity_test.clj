@@ -2,34 +2,6 @@
   (:use clojure.test)
   (:require [kixi.nhs.patient-experience.ethnicity :as ethnicity]))
 
-(deftest sum-sequence-test
-  (testing "Testing adding up values for a given key"
-    (is (= {:year "2012/13" :sum 50263.6 :period_of_coverage "July 2012 to March 2013"}
-           (ethnicity/sum-sequence
-            :denominator
-            [{:denominator "49962.0" :period_of_coverage "July 2012 to March 2013" :year "2012/13"}
-             {:denominator "301.6" :period_of_coverage "July 2012 to March 2013" :year "2012/13"}])))
-    (is (= {:year "2012" :sum 15 :period_of_coverage nil}
-           (ethnicity/sum-sequence
-            :denominator
-            [{:denominator "10" :period_of_coverage nil :year "2012"}
-             {:denominator "5" :period_of_coverage nil :year "2012"}])))
-    (is (= {:year "2012" :sum nil :period_of_coverage nil}
-           (ethnicity/sum-sequence
-            :denominator
-            [{:denominator "" :year "2012"}
-             {:denominator "" :year "2012"}])))
-    (is (= {:year "2012" :sum nil :period_of_coverage nil}
-           (ethnicity/sum-sequence
-            :denominator
-            [{:denominator nil :year "2012"}
-             {:denominator nil :year "2012"}])))
-    (is (= {:year "2012" :sum 1 :period_of_coverage nil}
-           (ethnicity/sum-sequence
-            :denominator
-            [{:denominator "1" :year "2012"}
-             {:denominator nil :year "2012"}])))))
-
 (deftest divide-maps-test
   (testing "Testing division of two maps"
     (is (= {:year "2012/13" :division-result (float 0.08128504) :period_of_coverage "July 2012 to March 2013"}
