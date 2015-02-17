@@ -100,3 +100,21 @@
   [k data]
   (->> (group-by k data)
        vals))
+
+(defn add-when-not-empty
+  "Sums values in a sequence if it's not empty.
+  Otherwise returns nil."
+  [data]
+  (when (seq data)
+    (apply + (map parse-number data))))
+
+(defn sum-sequence
+  "Retrieves all valeus for key k from a sequence
+  and adds them up. Returns a map containing key 'sum'
+  that contains the result of this calculation."
+  [k data]
+  (let [{:keys [year period_of_coverage]} (first data)]
+    {:year year :period_of_coverage period_of_coverage
+     :sum (->> (map k data)
+               (remove #(not (seq %)))
+               add-when-not-empty)}))

@@ -10,6 +10,26 @@
             [kixi.nhs.patient-experience.gender-comparison :as gender]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Idicator 57: Bereaved carers' views on the quality of care                           ;;
+;;              in the last 3 months of life                                            ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn end-of-life-care
+  "Reads data from CKAN for a fiven resource_id,
+  filters on conditions, sums up three indicator
+  values with reference to Outstanding, Excellent and Good
+  (that are already filtered) and returns a sequence of
+  results for each period."
+  [ckan-client recipe-map]
+  (->> (storage/get-resource-data ckan-client (:resource-id recipe-map))
+       (transform/filter-dataset recipe-map)
+       (transform/split-by-key :period_of_coverage)
+       (map #(transform/sum-sequence :indicator_value %))
+       (map #(update-in % [:sum] str))
+       (transform/enrich-dataset recipe-map)
+       (map #(clojure.set/rename-keys % {:sum :value}))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Simple datasets                                                                      ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -40,9 +60,10 @@
   [ckan-client config-url]
   (let [config                (read-config config-url)
         internal-calculations (:internal-calculations config)]
-    (concat (ethnicity/analysis ckan-client (:enthicity internal-calculations))
+    (concat (ethnicity/analysis ckan-client (:ethnicity internal-calculations))
             (deprivation/analysis ckan-client (:deprivation internal-calculations))
             (gender/analysis ckan-client (:gender internal-calculations))
+            (end-of-life-care ckan-client (:end-of-life-care internal-calculations))
             (mapcat (fn [dataset-config]
                       (read-dataset ckan-client dataset-config
                                     (:resource-id dataset-config)))
