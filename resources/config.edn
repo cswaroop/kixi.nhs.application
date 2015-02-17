@@ -168,4 +168,12 @@
                                    :fields-to-extract [:indicator_value :year
                                                        :period_of_coverage :level]
                                    :conditions [{:field :breakdown
-                                                 :values #{"Gender"}}]}]}}
+                                                 :values #{"Gender"}}]}]
+                         :end-of-life-care {:indicator-id "57"
+                                            :resource-id "4db8fb10-3f21-47bc-9ba8-f3cdb067d542"
+                                            :fields-to-extract [:indicator_value :question_response :year
+                                                                :period_of_coverage]
+                                            :conditions [{:field :question_response
+                                                          :values #{"Outstanding"
+                                                                    "Excellent"
+                                                                    "Good"}}]}}}

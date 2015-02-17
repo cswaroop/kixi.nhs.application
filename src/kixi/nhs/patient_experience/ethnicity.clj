@@ -8,24 +8,6 @@
   (:require [kixi.nhs.data.transform :as transform]
             [kixi.nhs.data.storage   :as storage]))
 
-(defn add-when-not-empty
-  "Sums values in a sequence if it's not empty.
-  Otherwise returns nil."
-  [data]
-  (when (seq data)
-    (apply + (map transform/parse-number data))))
-
-(defn sum-sequence
-  "Retrieves all valeus for key k from a sequence
-  and adds them up. Returns a map containing key 'sum'
-  that contains the result of this calculation."
-  [k data]
-  (let [{:keys [year period_of_coverage]} (first data)]
-    {:year year :period_of_coverage period_of_coverage
-     :sum (->> (map k data)
-               (remove #(not (seq %)))
-               add-when-not-empty)}))
-
 (defn divide-maps
   "Gets two maps, divides their entries for key :sum
   and returns a new map with :division-result containing
@@ -56,7 +38,7 @@
   [field k data]
   (->> (transform/filter-dataset field data)
        (transform/split-by-key :year)
-       (map #(sum-sequence k %))))
+       (map #(transform/sum-sequence k %))))
 
 (defn divide-sums
   "Gets a sequence of numerator sums and denominator sums
