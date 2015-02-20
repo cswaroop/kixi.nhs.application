@@ -7,7 +7,58 @@
             [kixi.nhs.data.transform                       :as transform]
             [kixi.nhs.patient-experience.deprivation       :as deprivation]
             [kixi.nhs.patient-experience.ethnicity         :as ethnicity]
-            [kixi.nhs.patient-experience.gender-comparison :as gender]))
+            [kixi.nhs.patient-experience.gender-comparison :as gender]
+            [clj-time.format                               :as tf]
+            [clj-time.core                                 :as t]
+            [clj-time.coerce                               :as tc]))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Idicator 65: Incidence of MRSA                                                       ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; TODO this formatter will be changed when bug in CKAN is fixed and data re-uploaded
+(def custom-formatter (tf/formatter "yyyy-MM-dd'T'HH:mm:ss"))
+
+(defn latest-month
+  "Finds the latest month in data.
+  It looks for a date using provided key.
+  Returns a datetime."
+  [k data]
+  (->> data
+       (map #(tf/parse custom-formatter (k %)))
+       t/latest))
+
+(defn enrich
+  "Use latest month timestamp to enrich the map
+  with year and period_of_coverage which are PKs in
+  datastore.
+  Stringifies the sum value."
+  [timestamp m]
+  (-> m
+      (assoc :year (str (t/year timestamp))
+             :period_of_coverage (tf/unparse custom-formatter timestamp))
+      (update-in [:sum] str)))
+
+(defn incidence
+  "Reads data from CKAN for a given resource_id,
+  filters data for latest month, sums up values for all
+  CCGs."
+  [ckan-client recipe-map]
+  (let [data           (storage/get-resource-data ckan-client (:resource-id recipe-map))
+        timestamp      (latest-month :reporting_period data)
+        updated-recipe (update-in recipe-map [:conditions] conj {:field :reporting_period
+                                                                 :values #{(tf/unparse custom-formatter timestamp)}})]
+    (->> data
+         (transform/filter-dataset updated-recipe)
+         (transform/sum-sequence :mrsa_count) ;; returns a single map
+         (enrich timestamp)
+         (conj []) ;; dataset should be a sequence of maps
+         (transform/enrich-dataset recipe-map)
+         (map #(clojure.set/rename-keys % {:sum :value})))))
+
+(defn incidence-datasets [ckan-client recipes]
+  (mapcat #(incidence ckan-client %) recipes))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Idicator 57: Bereaved carers' views on the quality of care                           ;;
@@ -15,7 +66,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn end-of-life-care
-  "Reads data from CKAN for a fiven resource_id,
+  "Reads data from CKAN for a given resource_id,
   filters on conditions, sums up three indicator
   values with reference to Outstanding, Excellent and Good
   (that are already filtered) and returns a sequence of
@@ -64,6 +115,7 @@
             (deprivation/analysis ckan-client (:deprivation internal-calculations))
             (gender/analysis ckan-client (:gender internal-calculations))
             (end-of-life-care ckan-client (:end-of-life-care internal-calculations))
+            (incidence-datasets ckan-client (:incidence internal-calculations))
             (mapcat (fn [dataset-config]
                       (read-dataset ckan-client dataset-config
                                     (:resource-id dataset-config)))
@@ -76,7 +128,7 @@
   (let [now             (transform/now->str)
         new-dataset     (json/encode {:owner_org "kixi"
                                       :title (str "Board report data TEST")
-                                      :name (str "board_report_dataset_test")
+                                      :name (str "board_report_dataset_test1")
                                       :author "Kixi"})
         new-dataset-id  (storage/create-new-dataset ckan-client new-dataset)
         new-resource    (json/encode {:package_id new-dataset-id

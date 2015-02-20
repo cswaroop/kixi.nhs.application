@@ -50,14 +50,6 @@
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
              :resource-id "e1ec7ee1-d387-45e3-a0dd-3c8e3162e0e0"}
-            {:indicator-id "65"
-             :fields-to-extract [:indicator_value :year :period_of_coverage]
-             :conditions [{:field :level :values #{"England"}}]
-             :resource-id "e39649c2-e4dd-49b3-bb9d-ae7d7b69bd2d"}
-            {:indicator-id "66"
-             :fields-to-extract [:indicator_value :year :period_of_coverage]
-             :conditions [{:field :level :values #{"England"}}]
-             :resource-id "5c932116-a89c-4efc-9db9-f4b36e812ef7"}
             {:indicator-id "44"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
@@ -176,4 +168,12 @@
                                             :conditions [{:field :question_response
                                                           :values #{"Outstanding"
                                                                     "Excellent"
-                                                                    "Good"}}]}}}
+                                                                    "Good"}}]}
+                         :incidence [{:indicator-id "65"
+                                       :fields-to-extract [:mrsa_count :reporting_period :level]
+                                       :conditions []
+                                      :resource-id "4b59deda-f204-453c-a7f6-e3ab6e29eb7d"}
+                                     {:indicator-id "66"
+                                       :fields-to-extract [:cdi_count :reporting_period :level]
+                                       :conditions []
+                                       :resource-id "14b766af-ebb4-4ad0-9eda-ab115699d587"}]}}
