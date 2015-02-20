@@ -14,7 +14,7 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Idicator 65: Incidence of MRSA                                                       ;;
+;; Indicator 65 & 66: Incidence of MRSA and C difficile                                 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; TODO this formatter will be changed when bug in CKAN is fixed and data re-uploaded
@@ -43,7 +43,8 @@
 (defn incidence
   "Reads data from CKAN for a given resource_id,
   filters data for latest month, sums up values for all
-  CCGs."
+  CCGs.
+  Returns a sequence of maps."
   [ckan-client recipe-map]
   (let [data           (storage/get-resource-data ckan-client (:resource-id recipe-map))
         timestamp      (latest-month :reporting_period data)
@@ -51,9 +52,9 @@
                                                                  :values #{(tf/unparse custom-formatter timestamp)}})]
     (->> data
          (transform/filter-dataset updated-recipe)
-         (transform/sum-sequence (:sum-field recipe-map)) ;; returns a single map
-         (enrich timestamp)
-         (conj []) ;; dataset should be a sequence of maps
+         (transform/sum-sequence (:sum-field recipe-map)) ;; returns a single map since it's summing up all maps
+         (enrich timestamp) ;; this dataset has uncommon field names, updating it to match others
+         (conj []) ;; dataset returned should be a sequence of maps
          (transform/enrich-dataset recipe-map)
          (map #(clojure.set/rename-keys % {:sum :value})))))
 
