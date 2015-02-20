@@ -51,7 +51,7 @@
                                                                  :values #{(tf/unparse custom-formatter timestamp)}})]
     (->> data
          (transform/filter-dataset updated-recipe)
-         (transform/sum-sequence :mrsa_count) ;; returns a single map
+         (transform/sum-sequence (:sum-field recipe-map)) ;; returns a single map
          (enrich timestamp)
          (conj []) ;; dataset should be a sequence of maps
          (transform/enrich-dataset recipe-map)
@@ -128,7 +128,7 @@
   (let [now             (transform/now->str)
         new-dataset     (json/encode {:owner_org "kixi"
                                       :title (str "Board report data TEST")
-                                      :name (str "board_report_dataset_test1")
+                                      :name (str "board_report_dataset_test2")
                                       :author "Kixi"})
         new-dataset-id  (storage/create-new-dataset ckan-client new-dataset)
         new-resource    (json/encode {:package_id new-dataset-id
@@ -163,6 +163,6 @@
 ;; (insert-board-report-dataset (:ckan-client system) "resources/config.edn")
 ;; To update existing board resource (preferrable):
 ;; TEST
-;; (update-board-report-dataset (:ckan-client system) "68d5438a-e4d3-4be0-8e34-3ccd40930dae" "resources/config.edn")
+;; (update-board-report-dataset (:ckan-client system) "22bfd34a-b6fc-49cf-b3c6-d69108129614" "resources/config.edn")
 ;; USED BY UI:
 ;; (update-board-report-dataset (:ckan-client system) "ed59dfc4-3076-4e84-806e-7a47d2321f36" "resources/config.edn")

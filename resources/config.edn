@@ -170,10 +170,12 @@
                                                                     "Excellent"
                                                                     "Good"}}]}
                          :incidence [{:indicator-id "65"
-                                       :fields-to-extract [:mrsa_count :reporting_period :level]
-                                       :conditions []
+                                      :fields-to-extract [:mrsa_count :reporting_period :level]
+                                      :conditions []
+                                      :sum-field :mrsa_count
                                       :resource-id "4b59deda-f204-453c-a7f6-e3ab6e29eb7d"}
                                      {:indicator-id "66"
-                                       :fields-to-extract [:cdi_count :reporting_period :level]
-                                       :conditions []
-                                       :resource-id "14b766af-ebb4-4ad0-9eda-ab115699d587"}]}}
+                                      :fields-to-extract [:cdi_count :reporting_period :level]
+                                      :conditions []
+                                      :sum-field :cdi_count
+                                      :resource-id "14b766af-ebb4-4ad0-9eda-ab115699d587"}]}}
