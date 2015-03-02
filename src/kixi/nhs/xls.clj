@@ -21,13 +21,70 @@
   [headers data]
   (zipmap headers data))
 
+(defn parse-formula
+  "Finds cells and operation in a formula.
+  Returns a sequence of [cell1 op cell2]."
+  [formula]
+  (rest (re-find #"^(\w+\d+)(\/|\-|\+|\*)(\w+\d+)$" formula)))
+
+(defmulti parse-value (fn [v offset xs] (first (keys v))))
+
+(defmethod parse-value :error [_ _ _]
+  nil)
+
+(defn col->int
+  "Convert each character to its positional number in alphabet.
+  For example the character A has ascii value of 65. If we subtract
+  65 it becomes 0 which means A is the first column."
+  [x]
+  (- (int (char (first (seq x)))) 65))
+
+(defn get-row [offset idx data]
+  (->> data (drop idx) first))
+
+(defn cell->value
+  "Find a specific cell in data.
+  Returns a value of that cell, either string,
+  number or nil."
+  [offset cell data]
+  (when cell
+    (let [column (col->int (re-find #"[A-Za-z]*" cell))
+          row    (get-row offset (dec (Integer/parseInt (re-find #"\d+" cell))) data)
+          v      (nth row column)]
+      v)))
+
+(defmethod parse-value :formula [v offset data]
+  (let [formula    (:formula v)
+        [c1 op c2] (parse-formula formula)
+        cell1      (cell->value offset c1 data)
+        cell2      (cell->value offset c2 data)
+        operation  (condp = op
+                     "/" /
+                     "*" *
+                     "-" -
+                     "+" +
+                     nil)]
+    (when operation
+      (operation cell1 cell2))))
+
+(defmethod parse-value :default [_ _ _ ] nil)
+
+(defn parse-values
+  ""
+  [offset data row]
+  (mapv #(if (map? %)
+           (parse-value % offset data)
+           %)
+        row))
+
 (defn scrub
   "Skips x number of rows that make up an unparseable
   header in the spreadsheet."
-  [scrub-details data]
+  [{:keys [offset last-row]} data]
   (->> data
-       (drop (:drop scrub-details))
-       (take 1) ;; TODO remove when done testing
+       (take last-row)
+       (drop offset)
+       (mapv #(parse-values offset data %))
        (into [])))
 
 (defn process-worksheet
@@ -56,6 +113,6 @@
            (get headers %)
            (get spreadsheet %)) worksheets)))
 
-(defn process-xls-recipes [ckan-client]
-  (let [recipes (:recipes (edn/read-string (slurp "resources/xls/recipes.edn")))]
-    (map #(process-xls ckan-client %) recipes)))
+(defn process-constitution-recipes [ckan-client]
+  (let [recipes (-> (slurp "resources/xls/recipes.edn") edn/read-string :recipes :constitution)]
+    (mapcat #(process-xls ckan-client %) recipes)))
