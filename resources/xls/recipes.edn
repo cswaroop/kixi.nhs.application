@@ -1,0 +1,4 @@
+{:recipes [{:resource_id "3a3ec969-bdfd-4df3-983a-bdeafd15ee59"
+            :headers "resources/xls/headers/gp_survey.edn"
+            :worksheets ["OUT OF HOURS"]
+            :scrub-details {:drop 10}}]}
