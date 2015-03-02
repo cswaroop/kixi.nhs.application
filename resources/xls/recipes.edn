@@ -1,7 +1,0 @@
-{:recipes {:constitution [{:resource_id "aeb66408-d8e5-4d4b-a701-36ae44203a0f"
-                           :indicator_id "132"
-                           :headers "resources/xls/headers/nhs_constitution.edn"
-                           :worksheets ["TWO WEEK WAIT-ALL CANCER"]
-                           :scrub-details {:offset 8
-                                           :last-row 221}}]}
- }

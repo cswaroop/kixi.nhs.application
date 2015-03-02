@@ -1,7 +1,8 @@
 (ns kixi.nhs.xls
-  (:require [kixi.nhs.data.storage  :as storage]
-            [clj-excel.core         :as xls]
-            [clojure.edn            :as edn]))
+  (:require [kixi.nhs.data.storage   :as storage]
+            [clj-excel.core          :as xls]
+            [clojure.edn             :as edn]
+            [kixi.nhs.data.transform :as transform]))
 
 (defn retrieve-xls-url
   "Returns URL of the xls from the resource metadata."
@@ -27,9 +28,9 @@
   [formula]
   (rest (re-find #"^(\w+\d+)(\/|\-|\+|\*)(\w+\d+)$" formula)))
 
-(defmulti parse-value (fn [v offset xs] (first (keys v))))
+(defmulti parse-value (fn [v xs] (first (keys v))))
 
-(defmethod parse-value :error [_ _ _]
+(defmethod parse-value :error [_ _]
   nil)
 
 (defn col->int
@@ -39,25 +40,25 @@
   [x]
   (- (int (char (first (seq x)))) 65))
 
-(defn get-row [offset idx data]
+(defn get-row [idx data]
   (->> data (drop idx) first))
 
 (defn cell->value
   "Find a specific cell in data.
   Returns a value of that cell, either string,
   number or nil."
-  [offset cell data]
+  [cell data]
   (when cell
     (let [column (col->int (re-find #"[A-Za-z]*" cell))
-          row    (get-row offset (dec (Integer/parseInt (re-find #"\d+" cell))) data)
+          row    (get-row (dec (Integer/parseInt (re-find #"\d+" cell))) data)
           v      (nth row column)]
       v)))
 
-(defmethod parse-value :formula [v offset data]
+(defmethod parse-value :formula [v data]
   (let [formula    (:formula v)
         [c1 op c2] (parse-formula formula)
-        cell1      (cell->value offset c1 data)
-        cell2      (cell->value offset c2 data)
+        cell1      (cell->value c1 data)
+        cell2      (cell->value c2 data)
         operation  (condp = op
                      "/" /
                      "*" *
@@ -67,13 +68,16 @@
     (when operation
       (operation cell1 cell2))))
 
-(defmethod parse-value :default [_ _ _ ] nil)
+(defmethod parse-value :default [_ _] nil)
 
 (defn parse-values
-  ""
-  [offset data row]
+  "Iterates over data and parses any
+  map values encountered.
+  If the value contains formula, calculates
+  its result."
+  [data row]
   (mapv #(if (map? %)
-           (parse-value % offset data)
+           (parse-value % data)
            %)
         row))
 
@@ -84,7 +88,7 @@
   (->> data
        (take last-row)
        (drop offset)
-       (mapv #(parse-values offset data %))
+       (mapv #(parse-values data %))
        (into [])))
 
 (defn process-worksheet
@@ -92,14 +96,16 @@
   Returns a map containing title
   and scrubbed data for a given
   worksheet."
-  [title scrub-details headers data]
-  {:title title
-   :data (->> data
-              (scrub scrub-details)
-              (mapv #(add-headers headers %)))})
+  [recipe headers data]
+  (->> data
+       (scrub (:scrub-details recipe))
+       (mapv #(add-headers headers %))
+       (transform/enrich-dataset recipe)))
 
 (defn process-xls
-  ""
+  "Retrieves spreadsheet and its headers,
+  scrubs the data and prepares a data structure
+  suitable for inserting to CKAN."
   [ckan-client recipe]
   (let [{:keys [resource_id headers
                 scrub-details
@@ -108,11 +114,6 @@
         spreadsheet          (-> (retrieve-xls-url ckan-client resource_id)
                                  read-in-xls)]
     (map #(process-worksheet
-           %
-           scrub-details
+           recipe
            (get headers %)
            (get spreadsheet %)) worksheets)))
-
-(defn process-constitution-recipes [ckan-client]
-  (let [recipes (-> (slurp "resources/xls/recipes.edn") edn/read-string :recipes :constitution)]
-    (mapcat #(process-xls ckan-client %) recipes)))

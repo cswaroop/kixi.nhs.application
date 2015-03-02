@@ -10,7 +10,8 @@
             [kixi.nhs.patient-experience.gender-comparison :as gender]
             [clj-time.format                               :as tf]
             [clj-time.core                                 :as t]
-            [clj-time.coerce                               :as tc]))
+            [clj-time.coerce                               :as tc]
+            [kixi.nhs.constitution                         :as constitution]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -120,7 +121,8 @@
             (mapcat (fn [dataset-config]
                       (read-dataset ckan-client dataset-config
                                     (:resource-id dataset-config)))
-                    (:datasets config)))))
+                    (:datasets config))
+            (constitution/analysis ckan-client (:constitution config)))))
 
 (defn insert-board-report-dataset
   "Calls create-boardreport-dataset and insert new
