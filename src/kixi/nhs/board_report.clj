@@ -164,9 +164,9 @@
     (storage/update-existing-resource ckan-client resource-id data)))
 
 ;; To insert new board report resource:
-;; (insert-board-report-dataset (:ckan-client system) "resources/config.edn")
+;; (insert-board-report-dataset (:ckan-client system) "resources/staging_config.edn")
 ;; To update existing board resource (preferrable):
 ;; TEST
-;; (update-board-report-dataset (:ckan-client system) "22bfd34a-b6fc-49cf-b3c6-d69108129614" "resources/config.edn")
+;; (update-board-report-dataset (:ckan-client system) "22bfd34a-b6fc-49cf-b3c6-d69108129614" "resources/staging_config.edn")
 ;; USED BY UI:
-;; (update-board-report-dataset (:ckan-client system) "ed59dfc4-3076-4e84-806e-7a47d2321f36" "resources/config.edn")
+;; (update-board-report-dataset (:ckan-client system) "ed59dfc4-3076-4e84-806e-7a47d2321f36" "resources/staging_config.edn")
