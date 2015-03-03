@@ -47,17 +47,18 @@
   CCGs.
   Returns a sequence of maps."
   [ckan-client recipe-map]
-  (let [data           (storage/get-resource-data ckan-client (:resource-id recipe-map))
-        timestamp      (latest-month :reporting_period data)
-        updated-recipe (update-in recipe-map [:conditions] conj {:field :reporting_period
-                                                                 :values #{(tf/unparse custom-formatter timestamp)}})]
-    (->> data
-         (transform/filter-dataset updated-recipe)
-         (transform/sum-sequence (:sum-field recipe-map)) ;; returns a single map since it's summing up all maps
-         (enrich timestamp) ;; this dataset has uncommon field names, updating it to match others
-         (conj []) ;; dataset returned should be a sequence of maps
-         (transform/enrich-dataset recipe-map)
-         (map #(clojure.set/rename-keys % {:sum :value})))))
+  (let [data           (storage/get-resource-data ckan-client (:resource-id recipe-map))]
+    (when (seq data)
+      (let [timestamp      (latest-month :reporting_period data)
+            updated-recipe (update-in recipe-map [:conditions] conj {:field :reporting_period
+                                                                     :values #{(tf/unparse custom-formatter timestamp)}})]
+        (->> data
+             (transform/filter-dataset updated-recipe)
+             (transform/sum-sequence (:sum-field recipe-map)) ;; returns a single map since it's summing up all maps
+             (enrich timestamp) ;; this dataset has uncommon field names, updating it to match others
+             (conj []) ;; dataset returned should be a sequence of maps
+             (transform/enrich-dataset recipe-map)
+             (map #(clojure.set/rename-keys % {:sum :value})))))))
 
 (defn incidence-datasets [ckan-client recipes]
   (mapcat #(incidence ckan-client %) recipes))
@@ -77,7 +78,7 @@
   (->> (storage/get-resource-data ckan-client (:resource-id recipe-map))
        (transform/filter-dataset recipe-map)
        (transform/split-by-key :period_of_coverage)
-       (map #(transform/sum-sequence :indicator_value %))
+       (map #(transform/sum-sequence :indicator_value [:question_response :indicator_value] %))
        (map #(update-in % [:sum] str))
        (transform/enrich-dataset recipe-map)
        (map #(clojure.set/rename-keys % {:sum :value}))))
@@ -130,8 +131,8 @@
   [ckan-client config-url]
   (let [now             (transform/now->str)
         new-dataset     (json/encode {:owner_org "kixi"
-                                      :title (str "Board report data TEST")
-                                      :name (str "board_report_dataset_test2")
+                                      :title (str "Board report data")
+                                      :name (str "board_report_dataset_0")
                                       :author "Kixi"})
         new-dataset-id  (storage/create-new-dataset ckan-client new-dataset)
         new-resource    (json/encode {:package_id new-dataset-id
@@ -143,11 +144,15 @@
                          {"id" "value" "type" "text"}
                          {"id" "year" "type" "text"}
                          {"id" "period_of_coverage" "type" "text"}
-                         {"id" "area_team_code" "type" "text"}]
+                         {"id" "breakdown" "type" "text"}
+                         {"id" "level" "type" "text"}
+                         {"id" "level_description" "type" "text"}
+                         {"id" "upper_ci" "type" "text"}
+                         {"id" "lower_ci" "type" "text"}]
         data            (data/prepare-resource-for-insert new-dataset-id new-resource-id
                                                           {"records" records
                                                            "fields"  fields
-                                                           "primary_key" "indicator_id,year,period_of_coverage"})]
+                                                           "primary_key" "indicator_id,level,year,period_of_coverage"})]
     (storage/insert-new-resource ckan-client new-dataset-id data)))
 
 
@@ -167,6 +172,7 @@
 ;; (insert-board-report-dataset (:ckan-client system) "resources/staging_config.edn")
 ;; To update existing board resource (preferrable):
 ;; TEST
-;; (update-board-report-dataset (:ckan-client system) "22bfd34a-b6fc-49cf-b3c6-d69108129614" "resources/staging_config.edn")
+;; (update-board-report-dataset (:ckan-client system) "eb600f7a-95cb-4de4-add4-62c687fe0958" "resources/staging_config.edn")
 ;; USED BY UI:
 ;; (update-board-report-dataset (:ckan-client system) "ed59dfc4-3076-4e84-806e-7a47d2321f36" "resources/staging_config.edn")
+;; (update-board-report-dataset (:ckan-client system) "ace36977-89f5-42ea-b95b-949da2c135cc" "resources/config.edn")

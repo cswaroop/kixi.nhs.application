@@ -94,11 +94,15 @@
   indicators with values for 5 and 1 years from the latest entry."
   [ckan-client recipe-map]
   (let [resource_id (:resource-id recipe-map)
-        data        (storage/get-resource-data ckan-client resource_id)]
-    (->> (transform/filter-dataset recipe-map data)
-         (transform/split-by-key :year)
-         (map deprivation-groups-avg)
-         (deprivation-analysis))))
+        data        (storage/get-resource-data ckan-client resource_id)
+        level       (-> data first :level)
+        breakdown   (-> data first :breakdown)]
+    (when (seq data)
+      (->> (transform/filter-dataset recipe-map data)
+           (transform/split-by-key :year)
+           (map deprivation-groups-avg)
+           (deprivation-analysis)
+           (map #(assoc % :level level :breakdown breakdown))))))
 
 (defn analysis
   "Receives a sequence of deprivation recipes.

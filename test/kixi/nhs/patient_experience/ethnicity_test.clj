@@ -41,30 +41,50 @@
     (is (= [{:indicator_id "213"
              :value "-0.09895137"
              :year "2013/14"
-             :period_of_coverage "July 2013 to March 2014"}
+             :period_of_coverage "July 2013 to March 2014"
+             :level "\"foo\" / \"bar\""
+             :breakdown nil}
             {:indicator_id "213"
              :value "-0.10988522"
              :year "2012/13"
-             :period_of_coverage "July 2012 to March 2013"}]
+             :period_of_coverage "July 2012 to March 2013"
+             :level "\"foo\" / \"bar\""
+             :breakdown nil}]
            (ethnicity/final-dataset "213"
-                                    [{:year "2013/14" :period_of_coverage "July 2013 to March 2014" :sum 37801.2}
-                                     {:year "2012/13" :period_of_coverage "July 2012 to March 2013" :sum 41031.1}]
-                                    [{:year "2013/14" :period_of_coverage "July 2013 to March 2014" :sum 49153.2}
-                                     {:year "2012/13" :period_of_coverage "July 2012 to March 2013" :sum 53279.2}]
-                                    [{:indicator_value 86.8 :period_of_coverage "July 2013 to March 2014" :year "2013/14"}
-                                     {:indicator_value 88 :period_of_coverage "July 2012 to March 2013" :year "2012/13"}])))
+                                    [{:year "2013/14" :period_of_coverage "July 2013 to March 2014" :sum 37801.2
+                                      :level "foo"}
+                                     {:year "2012/13" :period_of_coverage "July 2012 to March 2013" :sum 41031.1
+                                      :level "foo"}]
+                                    [{:year "2013/14" :period_of_coverage "July 2013 to March 2014" :sum 49153.2
+                                      :level "foo"}
+                                     {:year "2012/13" :period_of_coverage "July 2012 to March 2013" :sum 53279.2
+                                      :level "foo"}]
+                                    [{:indicator_value 86.8 :period_of_coverage "July 2013 to March 2014" :year "2013/14"
+                                      :level "bar"}
+                                     {:indicator_value 88 :period_of_coverage "July 2012 to March 2013" :year "2012/13"
+                                      :level "bar"}])))
     (is (= [{:indicator_id "213"
              :value nil
              :year "2013/14"
-             :period_of_coverage "July 2013 to March 2014"}
+             :period_of_coverage "July 2013 to March 2014"
+             :level "\"foo\" / \"bar\""
+             :breakdown "Ethnicity"}
             {:indicator_id "213"
              :value nil
              :year "2012/13"
+             :level "\"foo\" / \"bar\""
+             :breakdown "Ethnicity"
              :period_of_coverage "July 2012 to March 2013"}]
            (ethnicity/final-dataset "213"
-                                    [{:year "2013/14" :period_of_coverage "July 2013 to March 2014" :sum 37801.2}
-                                     {:year "2012/13" :period_of_coverage "July 2012 to March 2013" :sum nil}]
-                                    [{:year "2013/14" :period_of_coverage "July 2013 to March 2014" :sum 49153.2}
-                                     {:year "2012/13" :period_of_coverage "July 2012 to March 2013" :sum 0}]
-                                    [{:indicator_value nil :period_of_coverage "July 2013 to March 2014" :year "2013/14"}
-                                     {:indicator_value nil :period_of_coverage "July 2012 to March 2013" :year "2012/13"}])))))
+                                    [{:year "2013/14" :period_of_coverage "July 2013 to March 2014" :sum 37801.2
+                                      :level "foo" :breakdown "Ethnicity"}
+                                     {:year "2012/13" :period_of_coverage "July 2012 to March 2013" :sum nil
+                                      :level "foo" :breakdown "Ethnicity"}]
+                                    [{:year "2013/14" :period_of_coverage "July 2013 to March 2014" :sum 49153.2
+                                      :level "foo" :breakdown "Ethnicity"}
+                                     {:year "2012/13" :period_of_coverage "July 2012 to March 2013" :sum 0
+                                      :level "foo" :breakdown "Ethnicity"}]
+                                    [{:indicator_value nil :period_of_coverage "July 2013 to March 2014" :year "2013/14"
+                                      :level "bar" :breakdown "Ethnicity"}
+                                     {:indicator_value nil :period_of_coverage "July 2012 to March 2013" :year "2012/13"
+                                      :level "bar" :breakdown "Ethnicity"}])))))

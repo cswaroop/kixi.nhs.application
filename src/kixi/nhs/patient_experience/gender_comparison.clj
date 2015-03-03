@@ -25,6 +25,7 @@
        (remove #(= (:level %) "Unknown"))
        (transform/split-by-key :year)
        (map subtract-males-from-females)
+       (map #(assoc % :level "Female - Male" :breakdown "Gender"))
        (transform/enrich-dataset recipe)))
 
 (defn process-gender-analysis
