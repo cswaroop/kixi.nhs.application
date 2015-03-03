@@ -142,7 +142,8 @@
         fields          [{"id" "indicator_id" "type" "text"}
                          {"id" "value" "type" "text"}
                          {"id" "year" "type" "text"}
-                         {"id" "period_of_coverage" "type" "text"}]
+                         {"id" "period_of_coverage" "type" "text"}
+                         {"id" "area_team_code" "type" "text"}]
         data            (data/prepare-resource-for-insert new-dataset-id new-resource-id
                                                           {"records" records
                                                            "fields"  fields
