@@ -11,7 +11,8 @@
             [clj-time.format                               :as tf]
             [clj-time.core                                 :as t]
             [clj-time.coerce                               :as tc]
-            [kixi.nhs.constitution                         :as constitution]))
+            [kixi.nhs.constitution                         :as constitution]
+            [kixi.nhs.friends-and-family                   :as ff]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -123,7 +124,8 @@
                       (read-dataset ckan-client dataset-config
                                     (:resource-id dataset-config)))
                     (:datasets config))
-            (constitution/analysis ckan-client (:constitution config)))))
+            (constitution/analysis ckan-client (:constitution config))
+            (ff/analysis ckan-client (:friends-and-family config)))))
 
 (defn insert-board-report-dataset
   "Calls create-boardreport-dataset and insert new

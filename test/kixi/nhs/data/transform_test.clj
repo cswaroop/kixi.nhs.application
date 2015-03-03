@@ -88,9 +88,9 @@
     ;; Checks the sequence returned is empty when no dataset:
     (is (empty?
          (transform/filter-dataset {:indicator-id "22"
-                                       :fields-to-extract [:indicator_value :year :period_of_coverage]
-                                       :conditions [{:field :level :values #{"England"}}]
-                                       :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
+                                    :fields-to-extract [:indicator_value :year :period_of_coverage]
+                                    :conditions [{:field :level :values #{"England"}}]
+                                    :resource-id "2b10e7b4-c799-44f9-81d6-3a42f4260893"}
                                    [])))))
 
 (deftest enrich-dataset-test
@@ -128,7 +128,7 @@
               :period_of_coverage "July 2011 to March 2012", :numerator "891213.9"}])))
     (is (= [{:indicator_id "22" :indicator_value "85.7" :year "2013/14" :period_of_coverage "July 2013 to March 2014"}
             {:indicator_id "22" :indicator_value "86.7" :year "2012/13" :period_of_coverage "July 2012 to March 2013"}
-            {:indicator_id "22" :indicator_value "88.3" :year "2011/12" :period_of_coverage "July 2011 to March 2012"} ]
+            {:indicator_id "22" :indicator_value "88.3" :year "2011/12" :period_of_coverage "July 2011 to March 2012"}]
            (transform/enrich-dataset
             {:indicator-id "22"
              :fields-to-extract [:indicator_value :year :period_of_coverage]

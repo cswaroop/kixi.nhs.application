@@ -41,34 +41,34 @@
   (testing "Testing slope calculation"
     (is (= {:year "2013/14", :period_of_coverage "July 2013 to March 2014", :slope 5.1749999999999545}
            (deprivation/slope [{:level 1 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 83.55}
-                                {:level 2 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 84.5}
-                                {:level 3 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 86.0}
-                                {:level 4 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 87.15}
-                                {:level 5 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 87.4}])))
+                               {:level 2 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 84.5}
+                               {:level 3 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 86.0}
+                               {:level 4 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 87.15}
+                               {:level 5 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 87.4}])))
     (is (= {:year "2013/14", :period_of_coverage "July 2013 to March 2014", :slope -2.6200000000000045}
            (deprivation/slope [{:level 1 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 10.59}
-                                {:level 2 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.79}
-                                {:level 3 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.21}
-                                {:level 4 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 8.83}
-                                {:level 5 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 8.45}])))
+                               {:level 2 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.79}
+                               {:level 3 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.21}
+                               {:level 4 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 8.83}
+                               {:level 5 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 8.45}])))
     (is (= {:year "2013/14", :period_of_coverage "July 2013 to March 2014", :slope -2.8049999999999997}
            (deprivation/slope [{:level 1 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 11.47}
-                                {:level 2 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 10.66}
-                                {:level 3 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.92}
-                                {:level 4 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.53}
-                                {:level 5 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.23}])))))
+                               {:level 2 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 10.66}
+                               {:level 3 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.92}
+                               {:level 4 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.53}
+                               {:level 5 :period_of_coverage "July 2013 to March 2014" :year "2013/14" :indicator_value 9.23}])))))
 
 (deftest divide-slope-by-median-test
   (testing "Testing dividing the slope value by the indicator value of deprivation group 3."
     (is (= (float -0.2844734)
            (:division (deprivation/divide-slope-by-median {:slope -2.62 :median_indicator_value 9.21 :year "2002/03"
-                                                            :period_of_coverage ""}))))
+                                                           :period_of_coverage ""}))))
     (is (= (float -0.27806926)
            (:division (deprivation/divide-slope-by-median {:slope -2.65 :median_indicator_value 9.53 :year "2002/03"
-                                                            :period_of_coverage ""}))))
+                                                           :period_of_coverage ""}))))
     (is (= (float -0.2827621)
            (:division (deprivation/divide-slope-by-median {:slope -2.805 :median_indicator_value 9.92 :year "2002/03"
-                                                            :period_of_coverage ""}))))))
+                                                           :period_of_coverage ""}))))))
 
 (deftest deprivation-analysis-test
   (let [data [[{:level 1 :year "2002/03" :indicator_value 10.59}

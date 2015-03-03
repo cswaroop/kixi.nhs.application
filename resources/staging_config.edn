@@ -281,4 +281,17 @@
                 {:resource-id "32b83bff-0678-400d-825d-c9c892eb038b"
                  :indicator-id "140"
                  :metadata {:year "2014/2015" :period_of_coverage "01/04/2014 - 30/06/2014"}
-                 :division-fields [:after_62_days :total_treated]}]}
+                 :division-fields [:after_62_days :total_treated]}]
+ :friends-and-family [{:resource-id "9d6a0eba-d3f4-4a2c-934d-30dfeab5ef02"
+                       :indicator-id "49a"
+                       :headers "resources/headers/friends_and_family.edn"
+                       :worksheets ["IP Eng"]
+                       :scrub-details {:offset 9
+                                       :last-row 39}
+                       :field :friends-and-family-test-score
+                       :fields-to-extract [:friends-and-family-test-score :area-team
+                                           :year :period_of_coverage :level :breakdown]
+                       :conditions [{:field :area-team
+                                     :values #{"England (including Independent Sector Providers)"}}]
+                       :metadata {:year "2014" :period_of_coverage "01/08/2014" :level "England"
+                                  :breakdown "Region"}}]}

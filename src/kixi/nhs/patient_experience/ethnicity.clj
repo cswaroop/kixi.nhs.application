@@ -53,7 +53,7 @@
   (->> (divide-sums numerator-sums denominator-sums)
        (clojure.set/join indicator-values)
        (map subtract-indicator-value)
-       (map #(assoc % :level (str "\""(-> numerator-sums first :level)
+       (map #(assoc % :level (str "\"" (-> numerator-sums first :level)
                                   "\" / \""
                                   (-> indicator-values first :level) "\"")
                     :breakdown (-> indicator-values first :breakdown)))

@@ -15,15 +15,15 @@
   ([] {})
   ([m] m)
   ([m1 m2]
-    (reduce (fn [m1 [k2 v2]]
-              (if-let [v1 (get m1 k2)]
-                (if (and (map? v1) (map? v2))
-                  (assoc m1 k2 (combine v1 v2))
-                  (assoc m1 k2 v2))
-                (assoc m1 k2 v2)))
-            m1 m2))
+   (reduce (fn [m1 [k2 v2]]
+             (if-let [v1 (get m1 k2)]
+               (if (and (map? v1) (map? v2))
+                 (assoc m1 k2 (combine v1 v2))
+                 (assoc m1 k2 v2))
+               (assoc m1 k2 v2)))
+           m1 m2))
   ([m1 m2 & more]
-    (apply combine (combine m1 m2) more)))
+   (apply combine (combine m1 m2) more)))
 
 (defn config []
   (let [f (io/file (System/getProperty "user.home") ".nhs.edn")]
