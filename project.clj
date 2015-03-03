@@ -20,7 +20,8 @@
                  ;; logging
                  [org.clojure/tools.logging  "0.3.0"]
 
-                 [clj-time                   "0.9.0"]]
+                 [clj-time                   "0.9.0"]
+                 [clj-excel "0.0.1"]]
 
   :min-lein-version "2.5.0"
   :uberjar-name "kixi-nhs-application-%s.jar"

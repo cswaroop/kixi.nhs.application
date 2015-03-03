@@ -178,4 +178,6 @@
                                       :fields-to-extract [:cdi_count :reporting_period :level]
                                       :conditions []
                                       :sum-field :cdi_count
-                                      :resource-id "14b766af-ebb4-4ad0-9eda-ab115699d587"}]}}
+                                      :resource-id "14b766af-ebb4-4ad0-9eda-ab115699d587"}]}
+ :constitution [{:resource-id "0b788e3c-260c-473d-ae63-d1b767812538"
+                 :indicator-id "132"}]}

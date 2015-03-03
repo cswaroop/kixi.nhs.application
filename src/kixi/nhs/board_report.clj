@@ -10,7 +10,8 @@
             [kixi.nhs.patient-experience.gender-comparison :as gender]
             [clj-time.format                               :as tf]
             [clj-time.core                                 :as t]
-            [clj-time.coerce                               :as tc]))
+            [clj-time.coerce                               :as tc]
+            [kixi.nhs.constitution                         :as constitution]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -120,7 +121,8 @@
             (mapcat (fn [dataset-config]
                       (read-dataset ckan-client dataset-config
                                     (:resource-id dataset-config)))
-                    (:datasets config)))))
+                    (:datasets config))
+            (constitution/analysis ckan-client (:constitution config)))))
 
 (defn insert-board-report-dataset
   "Calls create-boardreport-dataset and insert new
@@ -140,7 +142,8 @@
         fields          [{"id" "indicator_id" "type" "text"}
                          {"id" "value" "type" "text"}
                          {"id" "year" "type" "text"}
-                         {"id" "period_of_coverage" "type" "text"}]
+                         {"id" "period_of_coverage" "type" "text"}
+                         {"id" "area_team_code" "type" "text"}]
         data            (data/prepare-resource-for-insert new-dataset-id new-resource-id
                                                           {"records" records
                                                            "fields"  fields
@@ -161,9 +164,9 @@
     (storage/update-existing-resource ckan-client resource-id data)))
 
 ;; To insert new board report resource:
-;; (insert-board-report-dataset (:ckan-client system) "resources/config.edn")
+;; (insert-board-report-dataset (:ckan-client system) "resources/staging_config.edn")
 ;; To update existing board resource (preferrable):
 ;; TEST
-;; (update-board-report-dataset (:ckan-client system) "22bfd34a-b6fc-49cf-b3c6-d69108129614" "resources/config.edn")
+;; (update-board-report-dataset (:ckan-client system) "22bfd34a-b6fc-49cf-b3c6-d69108129614" "resources/staging_config.edn")
 ;; USED BY UI:
-;; (update-board-report-dataset (:ckan-client system) "ed59dfc4-3076-4e84-806e-7a47d2321f36" "resources/config.edn")
+;; (update-board-report-dataset (:ckan-client system) "ed59dfc4-3076-4e84-806e-7a47d2321f36" "resources/staging_config.edn")
