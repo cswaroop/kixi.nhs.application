@@ -27,7 +27,7 @@
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "7b1be8ea-32bb-4d1b-8451-22796608076f"}
+             :resource-id "3e6f1dac-74f7-4051-8282-1d0c458d9e7c"}
             {:indicator-id "56"
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
@@ -72,7 +72,7 @@
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "7942992e-db54-488a-8057-72a432f02793"}
+             :resource-id "0a7ab959-fb42-4c13-baff-06646b9bdc75"}
             {:indicator-id "44"
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
