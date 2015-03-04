@@ -76,13 +76,12 @@
   "Filters dataset according to the given recipe."
   [recipe-map data]
   (let [{:keys [conditions indicator-id fields-to-extract]} recipe-map]
-    (when (all-fields-exist? fields-to-extract (first data))
-      (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field values]} condition]
-                                                    ;; values is a set
-                                                    (some values #{(get d field)})))
-                                  conditions)
-                      (select-keys d fields-to-extract)))
-            data))))
+    (keep (fn [d] (when (every? (fn [condition] (let [{:keys [field values]} condition]
+                                                  ;; values is a set
+                                                  (some values #{(get d field)})))
+                                conditions)
+                    (select-keys d fields-to-extract)))
+          data)))
 
 (defn enrich-map
   "Enriches map with indicator_id
@@ -114,13 +113,30 @@
   (when (seq data)
     (apply + (map parse-number data))))
 
+(defn remove-fields
+  [m fields]
+  (apply dissoc m fields))
+
 (defn sum-sequence
-  "Retrieves all valeus for key k from a sequence
+  "Retrieves all values for key k from a sequence
   and adds them up. Returns a map containing key 'sum'
-  that contains the result of this calculation."
-  [k data]
-  (let [{:keys [year period_of_coverage]} (first data)]
-    {:year year :period_of_coverage period_of_coverage
-     :sum (->> (map k data)
-               (remove #(not (seq %)))
-               add-when-not-empty)}))
+  that contains the result of this calculation
+  with other key value pairs coming from the first
+  item in the sequence."
+  [k fields-to-dissoc data]
+  (-> data
+      first
+      (assoc :sum (->> (map k data)
+                       (remove #(not (seq %)))
+                       add-when-not-empty))
+      (remove-fields fields-to-dissoc)))
+
+(defn divide
+  "Divides two numbers. Guards against
+  vivision by zero and nil values.
+  Returns a numeric value."
+  [n m]
+  (when (and (not (nil? n))
+             (not (nil? m))
+             (not (zero? m)))
+    (float (/ n m))))
