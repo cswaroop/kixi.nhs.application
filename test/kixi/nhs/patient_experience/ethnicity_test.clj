@@ -6,16 +6,16 @@
   (testing "Testing division of two maps"
     (is (= {:year "2012/13" :division-result (float 0.08128504) :period_of_coverage "July 2012 to March 2013"}
            (ethnicity/divide-maps {:year "2012/13" :sum 7206.0 :period_of_coverage "July 2012 to March 2013"}
-                                               {:year "2012/13" :sum 88651 :period_of_coverage "July 2012 to March 2013"})))
+                                  {:year "2012/13" :sum 88651 :period_of_coverage "July 2012 to March 2013"})))
     (is (= {:year "2012/13" :division-result 4.0 :period_of_coverage "July 2012 to March 2013"}
            (ethnicity/divide-maps {:year "2012/13" :sum 8 :period_of_coverage "July 2012 to March 2013"}
-                                               {:year "2012/13" :sum 2 :period_of_coverage "July 2012 to March 2013"})))
+                                  {:year "2012/13" :sum 2 :period_of_coverage "July 2012 to March 2013"})))
     (is (= {:year "2012/13" :division-result nil :period_of_coverage nil}
            (ethnicity/divide-maps {:year "2012/13" :sum nil :period_of_coverage nil}
-                                               {:year "2012/13" :sum 2 :period_of_coverage nil})))
+                                  {:year "2012/13" :sum 2 :period_of_coverage nil})))
     (is (= {:year "2012/13" :division-result nil :period_of_coverage nil}
            (ethnicity/divide-maps {:year "2012/13" :sum nil :period_of_coverage nil}
-                                               {:year "2012/13" :sum nil :period_of_coverage nil})))))
+                                  {:year "2012/13" :sum nil :period_of_coverage nil})))))
 
 (deftest subtract-indicator-value-test
   (testing "Testing subtracting"

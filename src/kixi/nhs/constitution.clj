@@ -10,7 +10,7 @@
   (->> data
        (map k)
        (keep #(when-not (empty? %)
-               (Integer/parseInt (clojure.string/replace % #"," ""))))
+                (Integer/parseInt (clojure.string/replace % #"," ""))))
        (apply +)))
 
 (defn percentage-seen-within-x-days
@@ -33,9 +33,9 @@
        (transform/split-by-key :area_team_code_1)
        (map #(percentage-seen-within-x-days fields
                                             metadata
-                                             "Area Team Code"
-                                             (:area_team_code_1 (first %))
-                                             (:area_team (first %)) %))))
+                                            "Area Team Code"
+                                            (:area_team_code_1 (first %))
+                                            (:area_team (first %)) %))))
 
 (defn per-region
   "Returns total for region (England),

@@ -6,8 +6,8 @@
 
 (defn retrieve-xls-url
   "Returns URL of the xls from the resource metadata."
-  [ckan-client resource_id]
-  (:url (storage/get-resource-metadata ckan-client resource_id)))
+  [ckan-client resource-id]
+  (:url (storage/get-resource-metadata ckan-client resource-id)))
 
 (defn read-in-xls
   "Retrieves xls spreadsheet from the given URL.
@@ -96,10 +96,11 @@
   Returns a map containing title
   and scrubbed data for a given
   worksheet."
-  [recipe headers data]
+  [recipe headers metadata data]
   (->> data
        (scrub (:scrub-details recipe))
        (mapv #(add-headers headers %))
+       (mapv #(merge metadata %))
        (transform/enrich-dataset recipe)))
 
 (defn process-xls
@@ -107,13 +108,14 @@
   scrubs the data and prepares a data structure
   suitable for inserting to CKAN."
   [ckan-client recipe]
-  (let [{:keys [resource_id headers
+  (let [{:keys [resource-id headers
                 scrub-details
                 worksheets]} recipe
         headers              (edn/read-string (slurp headers))
-        spreadsheet          (-> (retrieve-xls-url ckan-client resource_id)
+        spreadsheet          (-> (retrieve-xls-url ckan-client resource-id)
                                  read-in-xls)]
     (map #(process-worksheet
            recipe
            (get headers %)
+           (:metadata recipe)
            (get spreadsheet %)) worksheets)))

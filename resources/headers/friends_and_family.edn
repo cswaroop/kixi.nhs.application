@@ -1,0 +1,4 @@
+{"IP Eng" [:area-team-code :area-team :total-responses :total-eligible :response-rate
+           :friends-and-family-test-score :percentage-recommended :percentage-not-recommended
+           :empty
+           :extremely-likely :likely :neither :unlikely :extremely-unlikely :dont-know]}
