@@ -62,32 +62,32 @@
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "5b1607c5-82d8-43b2-a5f6-6c7383627787"}}
+             :resource-id "c05f9627-8932-4db8-b1d6-ccb29197158d"}}
             {:indicator-id "65"
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "e39649c2-e4dd-49b3-bb9d-ae7d7b69bd2d"}
+             :resource-id "5b1607c5-82d8-43b2-a5f6-6c7383627787"}
             {:indicator-id "66"
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "5c932116-a89c-4efc-9db9-f4b36e812ef7"}
+             :resource-id "7942992e-db54-488a-8057-72a432f02793"}
             {:indicator-id "44"
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "f581825b-cf3e-4f5d-a358-190dcc3f8a0e"}
+             :resource-id "52a33b3d-d8aa-4934-b769-62f73ec67e1e"}
             {:indicator-id "61"
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "f581825b-cf3e-4f5d-a358-190dcc3f8a0e"}
+             :resource-id "1fa9756c-ea6c-4bbf-9c7e-7c4928ed3772"}
             {:indicator-id "62"
              :fields-to-extract [:indicator_value_rate :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "aaa57c54-c747-4eb8-aa9e-f3da798372f3"}
+             :resource-id "01652770-ee37-4b47-b83b-f3a9627c3cd2"}
             {:indicator-id "54"
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
