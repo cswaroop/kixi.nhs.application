@@ -1,7 +1,7 @@
 {:datasets [{:indicator-id "23"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level_description :values #{"England"}}]
-             :resource-id "fe5836ec-4862-489c-a4ec-db7bf91de9cf"}
+             :resource-id "e8bbf627-6bb1-48f5-95e8-cf943ad16b37"}
             {:indicator-id "45"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level_description :values #{"England"}}]
@@ -179,5 +179,55 @@
                                       :conditions []
                                       :sum-field :cdi_count
                                       :resource-id "14b766af-ebb4-4ad0-9eda-ab115699d587"}]}
- :constitution [{:resource-id "0b788e3c-260c-473d-ae63-d1b767812538"
-                 :indicator-id "132"}]}
+ :friends-and-family [{:resource-id "2ea33fe4-a330-4282-ac45-0cea51508acb"
+                       :indicator-id "49a"
+                       :headers "resources/headers/friends_and_family.edn"
+                       :worksheets ["IP Eng"]
+                       :scrub-details {:offset 9
+                                       :last-row 39}
+                       :field :friends-and-family-test-score
+                       :fields-to-extract [:friends-and-family-test-score :area-team
+                                           :year :period_of_coverage :level :breakdown]
+                       :conditions [{:field :area-team
+                                     :values #{"England (including Independent Sector Providers)"}}]
+                       :metadata {:year "2013" :period_of_coverage "01/08/2013" :level "England"
+                                  :breakdown "Region"}}
+                      {:resource-id "3888a25c-baa1-46bb-8f51-19efb4613ccb"
+                       :indicator-id "49a"
+                       :headers "resources/headers/friends_and_family.edn"
+                       :worksheets ["IP Eng"]
+                       :scrub-details {:offset 9
+                                       :last-row 39}
+                       :field :friends-and-family-test-score
+                       :fields-to-extract [:friends-and-family-test-score :area-team
+                                           :year :period_of_coverage :level :breakdown]
+                       :conditions [{:field :area-team
+                                     :values #{"England (including Independent Sector Providers)"}}]
+                       :metadata {:year "2014" :period_of_coverage "01/01/2014" :level "England"
+                                  :breakdown "Region"}}
+                      {:resource-id "c0ad59fc-6593-46b3-9d2c-3573fdcf8e89"
+                       :indicator-id "49a"
+                       :headers "resources/headers/friends_and_family.edn"
+                       :worksheets ["IP Eng"]
+                       :scrub-details {:offset 9
+                                       :last-row 39}
+                       :field :friends-and-family-test-score
+                       :fields-to-extract [:friends-and-family-test-score :area-team
+                                           :year :period_of_coverage :level :breakdown]
+                       :conditions [{:field :area-team
+                                     :values #{"England (including Independent Sector Providers)"}}]
+                       :metadata {:year "2013" :period_of_coverage "01/12/2013" :level "England"
+                                  :breakdown "Region"}}
+                      {:resource-id "0ee7a7eb-66a5-44b3-a560-142dc8b647a5"
+                       :indicator-id "49a"
+                       :headers "resources/headers/friends_and_family.edn"
+                       :worksheets ["IP Eng"]
+                       :scrub-details {:offset 9
+                                       :last-row 39}
+                       :field :friends-and-family-test-score
+                       :fields-to-extract [:friends-and-family-test-score :area-team
+                                           :year :period_of_coverage :level :breakdown]
+                       :conditions [{:field :area-team
+                                     :values #{"England (including Independent Sector Providers)"}}]
+                       :metadata {:year "2013" :period_of_coverage "01/11/2013" :level "England"
+                                  :breakdown "Region"}}]}
