@@ -62,7 +62,7 @@
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]
              :conditions [{:field :level :values #{"England"}}]
-             :resource-id "c05f9627-8932-4db8-b1d6-ccb29197158d"}}
+             :resource-id "c05f9627-8932-4db8-b1d6-ccb29197158d"}
             {:indicator-id "65"
              :fields-to-extract [:indicator_value :year :period_of_coverage :breakdown :level :level_description
                                  :upper_ci :lower_ci]

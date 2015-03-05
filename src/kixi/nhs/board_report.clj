@@ -130,7 +130,7 @@
   dataset into ckan."
   [ckan-client config-url]
   (let [now             (transform/now->str)
-        new-dataset     (json/encode {:owner_org "kixi"
+        new-dataset     (json/encode {:owner_org "nhsebr"
                                       :title (str "Board report data")
                                       :name (str "board_report_dataset_0")
                                       :author "Kixi"})
