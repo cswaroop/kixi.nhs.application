@@ -12,7 +12,8 @@
             [clj-time.core                                 :as t]
             [clj-time.coerce                               :as tc]
             [kixi.nhs.constitution                         :as constitution]
-            [kixi.nhs.friends-and-family                   :as ff]))
+            [kixi.nhs.friends-and-family                   :as ff]
+            [kixi.nhs.gp-survey                            :as gp]))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -125,7 +126,8 @@
                                     (:resource-id dataset-config)))
                     (:datasets config))
             (constitution/analysis ckan-client (:constitution config))
-            (ff/analysis ckan-client (:friends-and-family config)))))
+            (ff/analysis ckan-client (:friends-and-family config))
+            (gp/access-to-gp-services ckan-client (:access-to-gp-services config)))))
 
 (defn insert-board-report-dataset
   "Calls create-boardreport-dataset and insert new
@@ -133,7 +135,7 @@
   [ckan-client config-url]
   (let [now             (transform/now->str)
         new-dataset     (json/encode {:owner_org "nhsebr"
-                                      :title (str "Board report data")
+                                      :title (str "Board report dataset")
                                       :name (str "board_report_dataset")
                                       :author "NHSE Board Report"})
         new-dataset-id  (storage/create-new-dataset ckan-client new-dataset)
@@ -171,10 +173,6 @@
     (storage/update-existing-resource ckan-client resource-id data)))
 
 ;; To insert new board report resource:
-;; (insert-board-report-dataset (:ckan-client system) "resources/staging_config.edn")
+;; (insert-board-report-dataset (:ckan-client system) "resources/prod_config.edn")
 ;; To update existing board resource (preferrable):
-;; TEST
-;; (update-board-report-dataset (:ckan-client system) "eb600f7a-95cb-4de4-add4-62c687fe0958" "resources/staging_config.edn")
-;; USED BY UI:
-;; (update-board-report-dataset (:ckan-client system) "ed59dfc4-3076-4e84-806e-7a47d2321f36" "resources/staging_config.edn")
-;; (update-board-report-dataset (:ckan-client system) "ace36977-89f5-42ea-b95b-949da2c135cc" "resources/config.edn")
+;; (update-board-report-dataset (:ckan-client system) "4cc5f907-e663-4c30-9c7a-8e31e5aa428c" "resources/prod_config.edn")

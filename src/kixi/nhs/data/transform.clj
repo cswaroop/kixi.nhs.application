@@ -87,17 +87,18 @@
   "Enriches map with indicator_id
   and makes sure period_coverage is not nil
   as it's a PK in CKAN."
-  [indicator-id m]
-  (-> m
-      ;; period_of_coverage is a PK so cannot be null. Using year if it's empty
-      (cond-> (empty? (:period_of_coverage m)) (assoc :period_of_coverage (:year m)))
-      (assoc :indicator_id indicator-id)))
+  [recipe-map m]
+  (let [{:keys [indicator-id metadata]} recipe-map]
+    (-> m
+        ;; period_of_coverage is a PK so cannot be null. Using year if it's empty
+        (cond-> (empty? (:period_of_coverage m)) (assoc :period_of_coverage (:year m)))
+        (merge metadata)
+        (assoc :indicator_id indicator-id))))
 
 (defn enrich-dataset
   "Enrichs dataset with indicator-id."
   [recipe-map data]
-  (let [{:keys [indicator-id]} recipe-map]
-    (mapv #(enrich-map indicator-id %) data)))
+  (mapv #(enrich-map recipe-map %) data))
 
 (defn split-by-key
   "Turns a sequence of maps into a sequence of sequences,

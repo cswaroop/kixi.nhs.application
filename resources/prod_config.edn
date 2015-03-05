@@ -1,90 +1,111 @@
 {:datasets [{:indicator-id "23"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level_description :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "e8bbf627-6bb1-48f5-95e8-cf943ad16b37"}
             {:indicator-id "45"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level_description :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "800d0b08-95f7-4a0f-abd5-8bcb2528d8b4"}
             {:indicator-id "46"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level_description :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "5ca47971-5d9e-4b50-93f0-8a8ecc90c072"}
             {:indicator-id "47"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level_description :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "bcdaf636-32d0-4122-9828-e01c14d95f0b"}
             {:indicator-id "48"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level_description :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "9c81f9a3-6301-4faf-90f0-b9f50d2aae39"}
             {:indicator-id "52"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "3e6f1dac-74f7-4051-8282-1d0c458d9e7c"}
             {:indicator-id "56"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :breakdown :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "18a8f547-be9b-4180-a8f6-4b5dccdfdc62"}
             {:indicator-id "58"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "c877fca5-5d8a-4f63-a592-57ac1cf576e1"}
             {:indicator-id "22"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "620c1ebe-8f6c-48f6-8dfc-a9f2e68b2467"}
             {:indicator-id "24"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "bb15bca9-9716-4d00-bc5f-8b8be88d60bc"}
             {:indicator-id "27"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "738b4af1-2691-40ae-a548-6ab6a6fd3415"}
             {:indicator-id "28"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "c44d0bd9-4d85-4aed-8051-5136f8d359a3"}
             {:indicator-id "43"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "c05f9627-8932-4db8-b1d6-ccb29197158d"}
             {:indicator-id "44"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "52a33b3d-d8aa-4934-b769-62f73ec67e1e"}
             {:indicator-id "61"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "1fa9756c-ea6c-4bbf-9c7e-7c4928ed3772"}
             {:indicator-id "62"
              :fields-to-extract [:indicator_value_rate :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "01652770-ee37-4b47-b83b-f3a9627c3cd2"}
             {:indicator-id "54"
              :fields-to-extract [:indicator_value :year :period_of_coverage]
              :conditions [{:field :level :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "3cb3fc90-3944-455a-97f0-50c9680184c7"}
             {:indicator-id "33"
              :fields-to-extract [:average_health_gain :year :period_of_coverage]
              :conditions [{:field :procedure :values #{"Hip replacement"}}
                           {:field :breakdown :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "df681d82-19f0-4584-8cc2-47cecad664ad"}
             {:indicator-id "34"
              :fields-to-extract [:average_health_gain :year :period_of_coverage]
              :conditions [{:field :procedure :values #{"Knee replacement"}}
                           {:field :breakdown :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "df681d82-19f0-4584-8cc2-47cecad664ad"}
             {:indicator-id "35"
              :fields-to-extract [:average_health_gain :year :period_of_coverage]
              :conditions [{:field :procedure :values #{"Groin hernia"}}
                           {:field :breakdown :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "df681d82-19f0-4584-8cc2-47cecad664ad"}
             {:indicator-id "36"
              :fields-to-extract [:average_health_gain :year :period_of_coverage]
              :conditions [{:field :procedure :values #{"Varicose vein"}}
                           {:field :breakdown :values #{"England"}}]
+             :metadata {:level "England"}
              :resource-id "df681d82-19f0-4584-8cc2-47cecad664ad"}]
  :internal-calculations {:ethnicity [{:indicator-id "213"
                                       :resource-id "7cb803a1-5c88-46e0-9e61-cf4c47ffadcb"
@@ -230,4 +251,17 @@
                        :conditions [{:field :area-team
                                      :values #{"England (including Independent Sector Providers)"}}]
                        :metadata {:year "2013" :period_of_coverage "01/11/2013" :level "England"
-                                  :breakdown "Region"}}]}
+                                  :breakdown "Region"}}]
+ :access-to-gp-services {:resource-id "0e10c436-ac0a-44f0-af86-483676b81981"
+                         :indicator-id "54"
+                         :headers "resources/headers/gp_survey.edn"
+                         :worksheets ["MAKING AN APPOINTMENT"]
+                         :scrub-details {:offset 10
+                                         :last-row 223}
+                         :fields-to-extract [:overall_experience_of_making_an_appointment_very_good_percentage
+                                             :overall_experience_of_making_an_appointment_fairly_good_percentage
+                                             :ccg_name]
+                         :conditions [{:field :ccg_name
+                                       :values #{"Results for England as a whole "}}]
+                         :metadata {:year "2014" :period_of_coverage "01/07/2014"
+                                    :level "England"}}}
